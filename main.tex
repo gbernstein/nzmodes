@@ -1,0 +1,85 @@
+% section/paper on sampling with sampled priors.
+%\documentclass[preprint,linenumbers]{aastex63}
+\documentclass[linenumbers, onecolumn]{aastex631}
+\usepackage{xcolor}
+
+\usepackage{natbib}
+\usepackage{amsmath}
+\usepackage{enumitem}
+
+\shortauthors{Bernstein et al.}
+
+\newcommand{\ie}{\textit{i.e.}}
+\newcommand{\eg}{\textit{e.g.}}
+\newcommand{\E}{\mathrm{E}}
+\newcommand{\eqq}[1]{Equation~(\ref{#1})}
+\newcommand\gary[1]{{\color{red} \{\textbf{GMB}: #1\}}}
+%\tabletypesize{\footnotesize}
+\newcommand{\vecc}{\ensuremath{\mathbf{c}}}
+\newcommand{\vecq}{\ensuremath{\mathbf{q}}}
+\newcommand{\vecn}{\ensuremath{\mathbf{n}}}
+\newcommand{\vecu}{\ensuremath{\mathbf{u}}}
+\newcommand{\hatc}{\ensuremath{\hat{\mathbf{c}}}}
+\newcommand{\vecP}{\ensuremath{\mathbf{P}}}
+\newcommand{\likeli}{\mathcal{L}}
+
+\begin{document}
+
+\title{Sampling Bayesian probabilities given only sampled priors}
+
+\author[0000-0002-8613-8259]{Gary M. Bernstein}
+\affiliation{Department of Physics and Astronomy, University of Pennsylvania, Philadelphia, PA 19104, USA}
+\email{garyb@upenn.edu}
+
+\author{Troxel,\ldots}
+
+\begin{abstract}
+	\vspace{0.2in}
+Later.
+\end{abstract}
+\reportnum{}
+
+\section{Introduction} \label{sec:intro}
+
+Our motivating situation is that we have a vector of observable summary statistics \vecc, such as the binned 2-point correlation functions of cosmic fields, that we are using to constrain a set of parameters of interest \vecq, which are cosmological parameters such as $\Omega_m, \sigma_8,$ etc.  There is a model $\vecc(\vecq,\vecn)$ for the observables which involves the parameters of interest, but also a vector \vecn\ of nuisance parameters, which include the coefficients of some linear expansion of the redshift distributions $n(z)$ of some population of the galaxies being observed:
+\begin{equation}
+  n(z) = \sum_{k=1}^{M} n_k b_k(z).
+  \label{eq:nzbasis}
+\end{equation}
+The $b_k$ are a set of predetermined basis functions for the redshift distribution.  In our case there are multiple galaxy populations to be characterized, leading to hundreds of parameters $n_k$ to be considered.
+
+We wish to characterized the Bayesian posterior probability
+\begin{equation}
+  p(\vecq | \vecc) \propto \int dn\, \likeli(\vecc | \vecq, \vecn) p(\vecq) p(\vecn),
+\label{eq:posterior}
+\end{equation}
+where $\likeli(\vecc | \vecq, \vecn)$ is a known likelihood function of the data, and $p(\vecq)$ and $p(\vecn)$ are priors on the parameters.  This posterior is complex enough that it requires approximation by the output of a Markov chain wandering across the space $(\vecq,\vecn).$
+
+The scenario of interest is when \emph{the prior $p(\vecn)$ is itself known only from a set of samples of $\vecn$ from this distribution.} Most MC samplers require that the posterior be an evaluable function of any value of the parameters, and it is the general task of density estimators to convert the samples of $\vecn$ into an evaluable $p(\vecn).$  But when \vecn\ is of high dimension, two problems arise: first, there may be insufficient available samples to create a viable density estimator; second, sampling of the posterior in (\ref{eq:posterior}) becomes infeasible if the MC must traverse a high-dimensional space.
+
+One approach would be to run a new MC chain over \vecq\ for each of the samples we have of \vecn, and then concatenate these to effect marginalization over \vecn.  This is clearly infeasible if a large number of \vecn\ samples are needed to characterize the prior in this space.
+
+For the DES Y3 analyses, \citet{hyperrank} devised a scheme whereby the samples of \vecn\ are mapped into a small vector \vecu\ of summary statistics, such as their $\langle z \rangle,$  The \vecu\ space was effectively transformed into a new space $\mathcal{H}$ which is partitioned into regions of equal volume, each containing one sample.  The MC for the cosmology posterior samples over the continuous coordinates of $\mathcal{H}$ with a uniform prior, and the value of \vecn\ that ``owns'' the sampled point of $\mathcal{H}$ space is used to calculate to posterior. This method succeeds in defining a lower-dimensional nuisance space with simple (uniform) prior that yields equal probability to each of the original \vecn\ samples.  The result is, however, discontinuous in the $\mathcal{H}$-space parameters of the nuisance functions, which leads to very inefficient sampling of the posterior.  In particular, samplers such as \textsc{MultiNest} that assume continuity are rendered nearly non-functional.  As a result, the Y3 cosmological priors could not be evaluated with this method.  Instead, the \vecn\ samples were not used, and an \textit{ad hoc} $p(\vecn)$ was adopted which allowed only shifts and dilations of the mean $n(z)$ of the \vecn\ samples.
+
+A more rigorous and extremely efficient method of marginalizing over high-dimensional nuisance parameters was proposed by \citet{hans}, for the case where the following restrictions apply:
+\begin{enumerate}
+\item The likelihood of the observable \vecc\ is normal, $\vecc \sim \mathcal{N}( \hatc, \Sigma_c).$
+\item The prior $p(\vecn)$ can also be assumed to be normal, with a mean and covariance matrix $\Sigma_n$ that in our case could be assigned from the mean and covariance of the samples of \vecn\ we are given.
+\item The model \hatc\ can be linearized about fiducial values $\vecq_0, \vecn_0$ without loss of accuracy exceeding measurement errors.
+\end{enumerate}
+Under these conditions, \citet{hans} show that the marginalization over \vecn\ is equivalent to adding terms to $\Sigma_c,$ such that any MC process need not sample \vecn\ at all.
+
+We describe here an approach that is algebraically similar to that of \citet{hans}, but does not require 2nd condition of Gaussianity for the nuisance prior, and is somewhat more robust to non-linearities in the model that violate the 3rd condition.  Our approach is to seek a linear compression of \vecn\ into a lower-dimensional set of parameters \vecu\ that project away variations in \vecn\ that do not influence the likelihood $\likeli.$  Standard density estimators can then be applied to the \vecu\ values implied by the known \vecn\ samples to yield a prior $p(\vecu)$ that can be used for the MC chain of the cosmological posterior.  The model \hatc, and hence $\likeli,$ will be continuous over this low-dimensional \vecu\ space, and marginalization over \vecu\ will yield posterior probabilities very close to marginalization over the original \vecn.  
+
+\begin{acknowledgments}
+
+G.M.B. acknowledges support from NSF grant AST-2205808 and \ldots.
+
+\end{acknowledgments}
+% \bibliography{references}
+\bibliographystyle{aasjournal}
+\bibitem[Cordero et al.(2022)]{hyperrank} Cordero, J.~P., Harrison, I., Rollins, R.~P., et al.\ 2022, \mnras, 511, 2170. doi:10.1093/mnras/stac147
+
+\bibitem[Hadzhiyska et al.(2020)]{hans} Hadzhiyska, B., Alonso, D., Nicola, A., et al.\ 2020, \jcap, 2020, 056. doi:10.1088/1475-7516/2020/10/056
+
+\end{document}
