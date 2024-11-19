@@ -1,6 +1,6 @@
 % section/paper on sampling with sampled priors.
-%\documentclass[preprint,linenumbers]{aastex63}
-\documentclass[linenumbers, onecolumn]{aastex631}
+% \documentclass[preprint,linenumbers]{aastex631} # 6.31 fails with \align!!
+\documentclass[linenumbers, onecolumn]{aastex63}
 \usepackage{xcolor}
 
 \usepackage{natbib}
@@ -21,8 +21,18 @@
 \newcommand{\vecu}{\ensuremath{\mathbf{u}}}
 \newcommand{\hatc}{\ensuremath{\hat{\mathbf{c}}}}
 \newcommand{\vecP}{\ensuremath{\mathbf{P}}}
+\newcommand{\covm}{C}
+\newcommand{\matA}{\ensuremath{A}}
+\newcommand{\matD}{D}
+\newcommand{\matU}{U}
+\newcommand{\matV}{V}
+\newcommand{\matW}{W}
+\newcommand{\proj}{P}  % Projection matrix
+\newcommand{\jac}{J}   % Jacobian
+\newcommand{\ident}{I}  % identity
+\newcommand{\DD}{\Delta_D}
 \newcommand{\likeli}{\mathcal{L}}
-
+\newcommand{\trace}{\text{Tr}}
 \begin{document}
 
 \title{Sampling Bayesian probabilities given only sampled priors}
@@ -39,7 +49,7 @@ Later.
 \end{abstract}
 \reportnum{}
 
-\section{Introduction} \label{sec:intro}
+\section{Motivation} \label{sec:intro}
 
 Our motivating situation is that we have a vector of observable summary statistics \vecc, such as the binned 2-point correlation functions of cosmic fields, that we are using to constrain a set of parameters of interest \vecq, which are cosmological parameters such as $\Omega_m, \sigma_8,$ etc.  There is a model $\vecc(\vecq,\vecn)$ for the observables which involves the parameters of interest, but also a vector \vecn\ of nuisance parameters, which include the coefficients of some linear expansion of the redshift distributions $n(z)$ of some population of the galaxies being observed:
 \begin{equation}
@@ -63,23 +73,194 @@ For the DES Y3 analyses, \citet{hyperrank} devised a scheme whereby the samples 
 
 A more rigorous and extremely efficient method of marginalizing over high-dimensional nuisance parameters was proposed by \citet{hans}, for the case where the following restrictions apply:
 \begin{enumerate}
-\item The likelihood of the observable \vecc\ is normal, $\vecc \sim \mathcal{N}( \hatc, \Sigma_c).$
-\item The prior $p(\vecn)$ can also be assumed to be normal, with a mean and covariance matrix $\Sigma_n$ that in our case could be assigned from the mean and covariance of the samples of \vecn\ we are given.
-\item The model \hatc\ can be linearized about fiducial values $\vecq_0, \vecn_0$ without loss of accuracy exceeding measurement errors.
+\item The likelihood of the observable \vecc\ is normal, $\vecc \sim \mathcal{N}( \hatc, \covm_c),$ with $\covm_c$ fixed.
+\item The prior $p(\vecn)$ can also be assumed to be normal, with a mean and covariance matrix $\covm_n$ that in our case could be assigned from the mean and covariance of the samples of \vecn\ we are given.
+\item The model \hatc\ can be linearized in \vecn\ about fiducial values $\vecq_0, \vecn_0$ without loss of accuracy exceeding measurement errors, with the derivatives independent of \vecq.
 \end{enumerate}
-Under these conditions, \citet{hans} show that the marginalization over \vecn\ is equivalent to adding terms to $\Sigma_c,$ such that any MC process need not sample \vecn\ at all.
+Under these conditions, \citet{hans} show that the marginalization over \vecn\ is equivalent to adding terms to $\covm_c,$ such that any MC process need not sample \vecn\ at all.
 
 We describe here an approach that is algebraically similar to that of \citet{hans}, but does not require 2nd condition of Gaussianity for the nuisance prior, and is somewhat more robust to non-linearities in the model that violate the 3rd condition.  Our approach is to seek a linear compression of \vecn\ into a lower-dimensional set of parameters \vecu\ that project away variations in \vecn\ that do not influence the likelihood $\likeli.$  Standard density estimators can then be applied to the \vecu\ values implied by the known \vecn\ samples to yield a prior $p(\vecu)$ that can be used for the MC chain of the cosmological posterior.  The model \hatc, and hence $\likeli,$ will be continuous over this low-dimensional \vecu\ space, and marginalization over \vecu\ will yield posterior probabilities very close to marginalization over the original \vecn.  
 
-\begin{acknowledgments}
+\section{Derivation}\label{sec:deriv}
+We assume that we do have a multivariate normal likelihood for the
+observables \vecc\, with the mean being some model
+$\hatc(\vecq,\vecn)$ and a fixed covariance matrix $\covm_c.$ In this
+section we will assume that the \vecn\ vectors have been shifted by
+the mean $\vecn_0 \equiv \left\langle \vecn_\alpha \right\rangle$ so
+that their mean is zero.
+We seek some function $\hat{\vecn}(\vecu)$ of a lower-dimensional vector \vecu\ which can be substituted for \vecn\ and yield nearly the same likelihood function for any \vecn\ in the domain spanned by the samples $\vecn_\alpha,\; \alpha\in 1\ldots N_\alpha,$ that we are provided.  This means we want a map $\vecn_\alpha\rightarrow \vecu_\alpha$ and a function $\hat{\vecn}(\vecu)$ which minimize the error in log-likelihood
+\begin{equation} -2 \left\langle \log \likeli(\vecc | \vecq,\vecn) - \log \likeli(\vecc | \vecq,\hat{\vecn}(\vecu)) \right\rangle =
+  \left\langle \Delta\chi^2 \right\rangle \approx \frac{1}{N_\alpha} \sum_\alpha
+                                            \left[ \hatc(\vecq,\vecn_\alpha) - \hatc(\vecq,\hat{\vecn}(\vecu_\alpha)) \right]^T
+                                            \covm_c^{-1}
+                                            \left[ \hatc(\vecq,\vecn_\alpha) - \hatc(\vecq,\hat{\vecn}(\vecu_\alpha)) \right].
+                                          \end{equation}
+                                          
+If we next define the Jacobian matrix
+\begin{equation}
+  \jac \equiv \left.\frac{\partial\hatc}{\partial\vecn}\right|_{\vecq_0, \vecn_0}
+\label{eq:jacobian}
+\end{equation}
+and assume that a first-order Taylor expansion about the nominal values is valid across the domain of interest, then we obtain
+\begin{equation}
+  \left\langle \Delta\chi^2 \right\rangle \approx \frac{1}{N_\alpha} \sum_\alpha
+  \left[ \vecn_\alpha - \hat{\vecn}(u_\alpha)\right]^T \jac^T \covm_c^{-1} \jac
+  \left[ \vecn_\alpha - \hat{\vecn}(u_\alpha)\right].
+  \label{eq:linearized}
+\end{equation}
+We ask what is the optimal \emph{linear} model $\hat{\vecn} = \matU \cdot \vecu$ to use.
+It is useful to define the matrix \matD\ and its ``square root'' $\DD$ by
+\begin{equation}
+   \matD \equiv \jac^T \covm_c^{-1} \jac =  \DD^T \DD.
+ \end{equation}
+Since \matD\ is positive-definite and symmetric, $\DD$ will exist and be real-valued.
+If \vecn\ has $N$ elements, and we want to compress the representation
+to a vector \vecu\ with $M$ elements, we will use the $M\times N$ projection
+matrix $\proj_M$ whose elements are
+\begin{equation}
+  \left(\proj_M\right)_{ij} \equiv
+\begin{cases}
+                                            1,  &  i=j\le M \\
+                                            0,  & \text{otherwise.}
+\end{cases}
+\end{equation}
+such that $\proj_M \proj_M^T=\ident_M,$ the $M\times M$ identity
+matrix. We will assume that \matU\ satisfies
+\begin{equation}
+  \DD \matU = \matV_U \proj_M^T
+\label{eq:vupm}
+\end{equation}
+for some unitary matrix $\matV_U$.  We can do this because, for any $\matU$, we have the
+singular-value decomposition $\DD \matU = \matV_U P_M^T \Lambda_U
+W_U^T,$ where $\Lambda_U$ is diagonal, $W_U$ is unitary, and both are
+$M\times M$.  We can always absorb these last two factors into the \vecu\ values
+to conserve the values of $\hat{\vecn} = \matU \vecu$ while making
+\eqq{eq:vupm} hold.
+
+With these definitions and a choice of \matU, the $\chi^2$ error and the values of $\vecu_\alpha$ that minimize it become
+\begin{align}
+  \left\langle \Delta\chi^2 \right\rangle & \approx \frac{1}{N_\alpha} \sum_\alpha
+                                            \left[ \vecn_\alpha - \matU \vecu_\alpha\right]^T \matD^{-1}
+                                            \left[ \vecn_\alpha - \matU \vecu_\alpha\right] \\
+  \Rightarrow \quad \vecu_{\alpha,\text{min}} & = \left[ \matD -
+                                                \matD\matU\left(\matU^{T}\matD\matU\right)^{-1}
+                                                \matU^T\matD\right]\vecn_\alpha  \\
+                                          & = \proj_M \matV_U^T \DD \vecn_\alpha.
+\end{align}                                            
+Defining the covariance matrix of the samples $\vecn_\alpha$ as
+$\covm_n=\left\langle \vecn_\alpha \vecn^T_\alpha \right\rangle,$ and
+plugging the last line back into the first,  gives us the quantity we
+want to minimize by selecting \matU\ properly:
+\begin{align}
+  \left\langle \Delta \chi^2 \right\rangle 
+  & = \trace\left[\covm_n\matD
+    - \covm_n \DD^T \matV_U \proj_M^T \proj_M \matV_U^T \DD \right], \\
+ & = \trace\left[\matV_A \Lambda_A \matV_A^T 
+    - \Lambda_A  \matV_A^T \matV_U \proj_M^T \proj_M \matV_U^T
+   \matV_A\right], \\
+  & = \sum_{i=1}^N \lambda^A_i \left[ 1 - \sum_{j=1}^M (\matV^T_A
+    \matV_U)^2_{ij}\right], \label{eq:dchi2} \\
+  \text{with} \quad \matA & \equiv \DD \covm_c \DD^T = \matV_A \Lambda_A \matV_A^T.
+\end{align}
+The last line defines a new symmetric, non-negative matrix \matA\ that
+has eigenvectors $\matV_A$ and positive eigenvalues $\Lambda_A=\text{Diag}(\lambda^A_1,
+\lambda^A_2, \ldots, \lambda^A_N).$ We assume the eigenvalues are
+placed into decreasing order.
+
+The minimization of $\left\langle \chi^2 \right\rangle$ thus requires
+choosing $\matV_U,$ to minimize \eqq{eq:dchi2}, then retrieving \matU\
+from \eqq{eq:vupm}.  Since $\matV_A^T\matV_U$ is a unitary matrix,
+each term in brackets must be non-negative and $\le 1,$ and their total must equal
+$N-M$.  The optimal case would be to have the bracketed term be zero
+for $i\le M$, and be unity when multiplying the smaller $\lambda^A_i$
+at $i>M.$  This occurs when $\matV_U=\matV_A,$ which is therefore our
+optimal compression in terms of reproducing the likelihood of the
+data.
+
+The desired linear compression of \vecn\ therefore has the following properties:
+\begin{itemize}
+\item The mean error in $2\log \likeli$ is
+  \begin{equation}
+    \left\langle \Delta\chi^2 \right \rangle = \sum_{i=M+1}^N
+    \lambda^A_i,
+  \end{equation}
+  and we will want to choose the dimension $M$ of the compression to
+  keep this quantity, the observable effect of the parts of \vecn\ that we 
+  project away,  below unity.
+  Note that the $\lambda^A_i$ values are determined by a combination of
+  the covariance matrix of the samples of \vecn, along with the Jacobian
+  matrix and the covariance $\covm_c$ of the observables, letting us
+  know the measurement significance of each mode of variation of \vecn.
+
+  \item The \matU\ matrix containing the $M$ basis vectors for
+    reconstructing \vecn\ is
+    \begin{equation}
+      \matU = \DD^{-1} \matV_A \proj_M^T.
+    \end{equation}
+    This requires that $\DD$ be invertible, but if we recall that
+    $\matV_A$ are the eigenvectors of $\DD \covm_n \DD,$ we can see
+    that we can get a well-defined result as long as the rank of
+    \matD\ is $\ge M$.  ???
+
+  \item The compressed $\vecu_\alpha$ for a chosen sample of \vecn\ is
+    \begin{equation}
+      \vecu_\alpha = \proj_M \matV_A^T \DD \vecn_\alpha,
+    \end{equation}
+    and the covariance matrix of the compressed samples is
+    \begin{equation}
+      \covm_u = \left\langle \vecu \vecu^T \right\rangle = \proj_M
+      \matV_A^T \DD \covm_n \DD^T \proj_M^T = \text{Diag}(\lambda^A_1,
+      \lambda^A_2, \ldots \lambda^A_M).
+    \end{equation}
+The components of the compressed \vecu\ coefficients are therefore
+uncorrelated.  Component $u_i$ has a variance
+$\lambda^A_i,$ which is also equal to the reduction in $\left\langle
+  \Delta \chi^2 \right\rangle$ that we will accrue if we include basis
+vector $\mathbf{U}_i$ into our linear reconstruction of \vecn.
+\end{itemize}
+
+
+Upon executing the compression $\{\vecn_\alpha\} \rightarrow
+\{\vecu_\alpha\},$ we may find the distribution of the samples to be
+consistent with a multivariate normal---which will have the diagonal covariance
+matrix $\covm_u,$ and statistical independence for the elements of
+\vecu.
+There is,however,  no \textit{a prior} reason that
+this must be the case.  We can use any density estimator over
+$\{\vecu_\alpha\}$ to define a continuous $p(\vecu)$ for a Markov
+chain running over the $(\vecq,\vecu)$ space.  This is the principle
+advantage of our method over the single-step covariance-inflation
+method of \citet{hans}.
+
+Even if the \vecu\ prior is well approximated as multivariate normal,
+there are practical advantages of compressing the nuisance 
+variables and retaining them in the cosmological Markov chain rather
+than using the covariance-inflation method for analytic
+marginalization.  One can, for example, examine the posterior
+distributions of \vecu\ and see if they are at the edges of the prior,
+which would potentially indicate an inconsistency between the data and
+the prior.
+  
+
+\section{Application}\label{sec:app}
+
+xxxxxxxxx xxxxxxxxx xxxxxxxxx xxxxxxxxx xxxxxxxxx xxxxxxxxx 
+xxxxxxxxx xxxxxxxxx xxxxxxxxx xxxxxxxxx xxxxxxxxx xxxxxxxxx 
+xxxxxxxxx xxxxxxxxx xxxxxxxxx xxxxxxxxx xxxxxxxxx xxxxxxxxx 
+xxxxxxxxx xxxxxxxxx xxxxxxxxx xxxxxxxxx xxxxxxxxx xxxxxxxxx 
+
+  \begin{acknowledgments}
+
 
 G.M.B. acknowledges support from NSF grant AST-2205808 and \ldots.
 
 \end{acknowledgments}
-% \bibliography{references}
-\bibliographystyle{aasjournal}
+\begin{thebibliography}{dummy}
+%\bibliography
+%\bibliographystyle{aasjournal}
 \bibitem[Cordero et al.(2022)]{hyperrank} Cordero, J.~P., Harrison, I., Rollins, R.~P., et al.\ 2022, \mnras, 511, 2170. doi:10.1093/mnras/stac147
 
 \bibitem[Hadzhiyska et al.(2020)]{hans} Hadzhiyska, B., Alonso, D., Nicola, A., et al.\ 2020, \jcap, 2020, 056. doi:10.1088/1475-7516/2020/10/056
+\end{thebibliography}
 
 \end{document}
