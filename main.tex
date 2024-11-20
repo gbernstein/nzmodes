@@ -109,11 +109,15 @@ and assume that a first-order Taylor expansion about the nominal values is valid
   \label{eq:linearized}
 \end{equation}
 We ask what is the optimal \emph{linear} model $\hat{\vecn} = \matU \cdot \vecu$ to use.
-It is useful to define the matrix \matD\ and its ``square root'' $\DD$ by
+It is useful to define the matrix \matD, its eigensystem
+$(\matV_D,\Lambda_D),$  \ and its ``square root'' $\DD$ by
 \begin{equation}
-   \matD \equiv \jac^T \covm_c^{-1} \jac =  \DD^T \DD.
+   \matD \equiv \jac^T \covm_c^{-1} \jac =  \matV_D \Lambda_D
+   \matV_D^T = \left(\matV_D \Lambda_D^{1/2}\right)
+   \left(\Lambda_D^{1/2}\matV_D^T \right) = \DD^T \DD.
  \end{equation}
-Since \matD\ is positive-definite and symmetric, $\DD$ will exist and be real-valued.
+Since \matD\ is non-negative and symmetric, $\DD$ will exist and be
+real-valued with non-negative singular values.
 If \vecn\ has $N$ elements, and we want to compress the representation
 to a vector \vecu\ with $M$ elements, we will use the $M\times N$ projection
 matrix $\proj_M$ whose elements are
@@ -195,21 +199,22 @@ The desired linear compression of \vecn\ therefore has the following properties:
   \item The \matU\ matrix containing the $M$ basis vectors for
     reconstructing \vecn\ is
     \begin{equation}
-      \matU = \DD^{-1} \matV_A \proj_M^T.
+      \matU = \DD^{-1} \matV_A \proj_M^T = \matV_D \Lambda_D^{-1/2}  \matV_A \proj_M^T.
     \end{equation}
-    This requires that $\DD$ be invertible, but if we recall that
-    $\matV_A$ are the eigenvectors of $\DD \covm_n \DD,$ we can see
-    that we can get a well-defined result as long as the rank of
-    \matD\ is $\ge M$.  ???
+    In inverting the (non-negative, diagonal) matrix $\Lambda_D^{1/2},$ one should null the
+    inverses of elements that are $\lesssim 10^{-3}$ of the largest
+    element, to avoid adding large fluctuations to \matU\ that address
+    noise or roundoff-error terms that contribute negligibly to $\chi^2.$ 
 
   \item The compressed $\vecu_\alpha$ for a chosen sample of \vecn\ is
     \begin{equation}
-      \vecu_\alpha = \proj_M \matV_A^T \DD \vecn_\alpha,
+      \vecu_\alpha = \proj_M \matV_A^T \DD \vecn_\alpha = \proj_M
+      \matV_A^T \Lambda_D^{1/2} \matV_D^T \vecn_\alpha,
     \end{equation}
     and the covariance matrix of the compressed samples is
     \begin{equation}
       \covm_u = \left\langle \vecu \vecu^T \right\rangle = \proj_M
-      \matV_A^T \DD \covm_n \DD^T \proj_M^T = \text{Diag}(\lambda^A_1,
+      \matV_A^T \DD \covm_n \DD^T \matV_A \proj_M^T = \text{Diag}(\lambda^A_1,
       \lambda^A_2, \ldots \lambda^A_M).
     \end{equation}
 The components of the compressed \vecu\ coefficients are therefore
@@ -218,7 +223,10 @@ $\lambda^A_i,$ which is also equal to the reduction in $\left\langle
   \Delta \chi^2 \right\rangle$ that we will accrue if we include basis
 vector $\mathbf{U}_i$ into our linear reconstruction of \vecn.
 \end{itemize}
-
+The compression thus consists of choosing the desired number of rows
+of the matrix $ \matV_A^T \Lambda_D^{1/2} \matV_D^T$, and the modes
+are the corresponding columns of this matrix's inverse, with each
+included mode reducing the mean compression error in mean $\chi^2$ by $\lambda^A_i.$
 
 Upon executing the compression $\{\vecn_\alpha\} \rightarrow
 \{\vecu_\alpha\},$ we may find the distribution of the samples to be
