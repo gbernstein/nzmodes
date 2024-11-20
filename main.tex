@@ -69,7 +69,21 @@ The scenario of interest is when \emph{the prior $p(\vecn)$ is itself known only
 
 One approach would be to run a new MC chain over \vecq\ for each of the samples we have of \vecn, and then concatenate these to effect marginalization over \vecn.  This is clearly infeasible if a large number of \vecn\ samples are needed to characterize the prior in this space.
 
-For the DES Y3 analyses, \citet{hyperrank} devised a scheme whereby the samples of \vecn\ are mapped into a small vector \vecu\ of summary statistics, such as their $\langle z \rangle,$  The \vecu\ space was effectively transformed into a new space $\mathcal{H}$ which is partitioned into regions of equal volume, each containing one sample.  The MC for the cosmology posterior samples over the continuous coordinates of $\mathcal{H}$ with a uniform prior, and the value of \vecn\ that ``owns'' the sampled point of $\mathcal{H}$ space is used to calculate to posterior. This method succeeds in defining a lower-dimensional nuisance space with simple (uniform) prior that yields equal probability to each of the original \vecn\ samples.  The result is, however, discontinuous in the $\mathcal{H}$-space parameters of the nuisance functions, which leads to very inefficient sampling of the posterior.  In particular, samplers such as \textsc{MultiNest} that assume continuity are rendered nearly non-functional.  As a result, the Y3 cosmological priors could not be evaluated with this method.  Instead, the \vecn\ samples were not used, and an \textit{ad hoc} $p(\vecn)$ was adopted which allowed only shifts and dilations of the mean $n(z)$ of the \vecn\ samples.
+For the DES Y3 analyses, \citet{hyperrank} devised a scheme whereby
+the samples of \vecn\ are placed in a grid within some $M$-dimensional
+unit hypercube $\mathcal{H}$.  The coordinates \vecu\ within the hypercube
+are considered the compressed parameters of $n(z),$ and the
+decompression function
+$\hat{\vecn}(\vecu)$ outputs the $\vecn_\alpha$ sample at the nearest grid point to
+  \vecu.  This solves the problem of creating a continuous \vecu\
+  domain, and maintains the equal prior probability of each \vecn\
+  sample, but the function \emph{output,} and the resultant likelihood
+  function of \vecu\, are discontinuous.
+Various strategies are proposed to assign the $\vecn_\alpha$ to the grid points in
+$\mathcal{H}$ based on summary statistics, to reduce the
+discontinuities.  But the function is never smooth.
+As a consequence, many MC samplers become quite inefficient in
+sampling of the cosmological posterior.  In particular, samplers such as \textsc{MultiNest} that assume continuity are rendered nearly non-functional.  As a result, the Y3 cosmological priors could not be evaluated with this method.  Instead, the \vecn\ samples were not used, and an \textit{ad hoc} $p(\vecn)$ was adopted which allowed only shifts and dilations of the mean $n(z)$ of the \vecn\ samples.
 
 A more rigorous and extremely efficient method of marginalizing over high-dimensional nuisance parameters was proposed by \citet{hans}, for the case where the following restrictions apply:
 \begin{enumerate}
