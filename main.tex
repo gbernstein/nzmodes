@@ -158,7 +158,7 @@ to conserve the values of $\hat{\vecn} = \matU \vecu$ while making
 With these definitions and a choice of \matU, the $\chi^2$ error and the values of $\vecu_\alpha$ that minimize it become
 \begin{align}
   \left\langle \Delta\chi^2 \right\rangle & \approx \frac{1}{N_\alpha} \sum_\alpha
-                                            \left[ \vecn_\alpha - \matU \vecu_\alpha\right]^T \matD^{-1}
+                                            \left[ \vecn_\alpha - \matU \vecu_\alpha\right]^T \matD
                                             \left[ \vecn_\alpha - \matU \vecu_\alpha\right] \\
   \Rightarrow \quad \vecu_{\alpha,\text{min}} & = \left[ \matD -
                                                 \matD\matU\left(\matU^{T}\matD\matU\right)^{-1}
@@ -178,7 +178,7 @@ want to minimize by selecting \matU\ properly:
    \matV_A\right], \\
   & = \sum_{i=1}^N \lambda^A_i \left[ 1 - \sum_{j=1}^M (\matV^T_A
     \matV_U)^2_{ij}\right], \label{eq:dchi2} \\
-  \text{with} \quad \matA & \equiv \DD \covm_c \DD^T = \matV_A \Lambda_A \matV_A^T.
+  \text{with} \quad \matA & \equiv \DD \covm_n \DD^T = \matV_A \Lambda_A \matV_A^T.
 \end{align}
 The last line defines a new symmetric, non-negative matrix \matA\ that
 has eigenvectors $\matV_A$ and positive eigenvalues $\Lambda_A=\text{Diag}(\lambda^A_1,
