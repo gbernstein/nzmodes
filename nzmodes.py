@@ -56,6 +56,24 @@ def getModes(D, Cn, chisq_threshold=0.1):
     
     return X, U, s*s, resid
 
+class Modes:
+    def __init__(self, file):
+        '''Compress or decompress n(z)'s into modes defined in the given file.'''
+        self.a = np.load(file)
+        
+    def compress(self,nz):
+        '''Compress n(z) array into mode coefficients.
+        Argument is an (...,N) array of n(z) values that is already
+        normalized according to conventions used to create modes.
+        
+        Returns (...,M) array of mode coefficients from projection.'''
+        return np.einsum('...j,kj->...k',nz-self.a['mean'],self.a['X'])
+    def decompress(self,u):
+        '''Reconstruct n(z) from coefficients.
+        Argument is (...,M) array of mode coefficients.
+        Returns (...,N) array of n(z) values.'''
+        return np.einsum('...j,kj->...k',u, self.a['U']) + self.a['mean']
+ 
 class Tz:
     def __init__(self, dz, nz, z0=None):
         '''Class representing sawtooth n(z) kernels (bins) in z.
@@ -112,3 +130,5 @@ class Tz:
         # Make the kernel coefficients at the z's
         kk = np.array([self(k,z) for k in range(self.nz)])
         return np.einsum('...i,ij->...j',coeffs,kk) / np.sum(coeffs, axis=-1)
+
+ 
