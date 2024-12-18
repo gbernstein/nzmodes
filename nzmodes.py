@@ -129,6 +129,6 @@ class Tz:
         
         # Make the kernel coefficients at the z's
         kk = np.array([self(k,z) for k in range(self.nz)])
-        return np.einsum('...i,ij->...j',coeffs,kk) / np.sum(coeffs, axis=-1)
+        return np.einsum('...i,ij->...j',coeffs,kk) / np.sum(coeffs, axis=-1)[...,np.newaxis]
 
  
