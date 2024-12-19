@@ -1,5 +1,8 @@
 # Codes for creating and smoothing modes
 import numpy as np
+from scipy.stats import norm
+from scipy.interpolate import interp1d
+
 def getModes(D, Cn, chisq_threshold=0.1):
     '''Calculate the compression matrix from n to u and the
     modes U that multiply each U.  
@@ -132,3 +135,32 @@ class Tz:
         return np.einsum('...i,ij->...j',coeffs,kk) / np.sum(coeffs, axis=-1)[...,np.newaxis]
 
  
+class Normalizer:
+    def __init__(self, x, gmax=5, kind='cubic'):
+        '''Class to create transformations from some sampled distribution x 
+        to a new variable g that is distributed as a unit normal.  Supply
+        the x distribution at initialization, then the methods `gauss`
+        and `degauss` will be maps from x->g and g->x, respectively.
+        WARNING: these will not be exact inverses of each other because
+        of the use of spline interpolation.
+        `gmax` gives the bounds in g space of the interpolator, i.e. number
+        of sigma.'''
+        
+        # Establishing matching percentile points
+        dg = 0.1
+        gg = np.arange(-gmax,gmax+dg/2, dg)
+        xx = np.percentile(x, norm.cdf(gg)*100)
+        # Clean out any duplicates in the tables.  This is hacky.
+        dup = xx[1:]==xx[:-1]
+        keep = np.concatenate( (np.logical_not(dup), [True]))
+        gg = gg[keep]
+        xx = xx[keep]
+        self.fwd = interp1d(xx,gg,kind=kind, bounds_error=False, fill_value=(-gmax,gmax))
+        self.inv = interp1d(gg,xx,kind=kind, bounds_error=False, fill_value=(np.min(x),np.max(x)))
+        return
+    def gauss(self,x):
+        '''Return Gaussianized values of x'''
+        return self.fwd(x)
+    def degauss(self,g):
+        '''Return de-Gaussianized values of g'''
+        return self.inv(g)
