@@ -58,7 +58,7 @@ Later.
 
 \section{Motivation} \label{sec:intro}
 
-Our motivating situation is that we have a vector of observable summary statistics \vecc, such as the binned 2-point correlation functions of cosmic fields, that we are using to constrain a set of parameters of interest \vecq, which are cosmological parameters such as $\Omega_m, \sigma_8,$ etc.  There is a model $\vecc(\vecq,\vecn)$ for the observables which involves the parameters of interest, but also a vector \vecn\ of nuisance parameters, which include the coefficients of some linear expansion of the redshift distributions $n(z)$ of some population of the galaxies being observed:
+Our motivating situation is that we have a vector of observable summary statistics \vecc, such as the binned 2-point correlation functions of cosmic fields, that we are using to constrain a set of parameters of interest \vecq, which are cosmological parameters such as $\Omega_m, \sigma_8,$ etc.  There is a model $\hatc(\vecq,\vecn)$ for the observables which involves the parameters of interest, but also a vector \vecn\ of nuisance parameters, which include the coefficients of some linear expansion of the redshift distributions $n(z)$ of some population of the galaxies being observed:
 \begin{equation}
   n(z) = \sum_{k=1}^{M} n_k b_k(z).
   \label{eq:nzbasis}
@@ -70,7 +70,10 @@ We wish to characterized the Bayesian posterior probability
   p(\vecq | \vecc) \propto \int dn\, \likeli(\vecc | \vecq, \vecn) p(\vecq) p(\vecn),
 \label{eq:posterior}
 \end{equation}
-where $\likeli(\vecc | \vecq, \vecn)$ is a known likelihood function of the data, and $p(\vecq)$ and $p(\vecn)$ are priors on the parameters.  This posterior is complex enough that it requires approximation by the output of a Markov chain wandering across the space $(\vecq,\vecn).$
+where $\likeli(\vecc | \vecq, \vecn)$ is a known likelihood function
+of the data, and $p(\vecq)$ and $p(\vecn)$ are priors on the
+parameters.  This posterior is complex enough that it requires
+approximation by the output of a Markov chain (MC) wandering across the space $(\vecq,\vecn).$
 
 The scenario of interest is when \emph{the prior $p(\vecn)$ is itself known only from a set of samples of $\vecn$ from this distribution.} Most MC samplers require that the posterior be an evaluable function of any value of the parameters, and it is the general task of density estimators to convert the samples of $\vecn$ into an evaluable $p(\vecn).$  But when \vecn\ is of high dimension, two problems arise: first, there may be insufficient available samples to create a viable density estimator; second, sampling of the posterior in (\ref{eq:posterior}) becomes infeasible if the MC must traverse a high-dimensional space.
 
@@ -85,7 +88,7 @@ $\hat{\vecn}(\vecu)$ outputs the $\vecn_\alpha$ sample at the nearest grid point
   \vecu.  This solves the problem of creating a continuous \vecu\
   domain, and maintains the equal prior probability of each \vecn\
   sample, but the function \emph{output,} and the resultant likelihood
-  function of \vecu\, are discontinuous.
+  function of \vecu, are discontinuous.
 Various strategies are proposed to assign the $\vecn_\alpha$ to the grid points in
 $\mathcal{H}$ based on summary statistics, to reduce the
 discontinuities.  But the function is never smooth.
@@ -112,8 +115,8 @@ that their mean is zero.
 We seek some function $\hat{\vecn}(\vecu)$ of a lower-dimensional
 vector \vecu\ which can be substituted for \vecn\ and yield nearly the
 same likelihood function for any \vecn\ in the domain spanned by the
-samples $\vecn_\alpha,\; \alpha\in 1\ldots N_\alpha,$ that we are
-provided.  This means we want a map $\vecn_\alpha\rightarrow
+samples $\vecn_\alpha,\; \alpha\in 1\ldots N_\alpha.$
+This means we want a map $\vecn_\alpha\rightarrow
 \vecu_\alpha \rightarrow \hat{\vecn}_\alpha$ such that replacing $\vecn$ with
 $\hat\vecn$ alters the cosmological inference by much less than the
 other uncertainties.  We will implement this by minimizing the
@@ -133,8 +136,8 @@ If the data are in fact drawn from the model $\hatc(\vecq,\vecn)$ with
 a Gaussian likelihood, then this is also the mean shift in $-2\log\likeli$
 from the compression.  It is \emph{not}, however, equal to the mean
 shift of the overall log of the posterior in
-\eqq{eq:posterior}---$\left\langle\chi^2\right\rangle$ is serving as a
-proxy for this.
+\eqq{eq:posterior}---rather, $\left\langle\chi^2\right\rangle$ is serving as a
+proxy for the true log-likelihood shift. 
 
 We next assume that the compression is linear, $\hat\vecn=\matX\vecn,$
 for some matrix that is idempotent ($\matX\matX = \matX$).  If this is
@@ -158,7 +161,14 @@ provided by the observations $\vecc.$  In many cases this matrix will be
 rank-deficient and/or poorly conditioned, since the observables are not
 likely to be very informative on $\vecn$---if they were, we might not be
 concerned with establishing a prior on $\vecn$ to begin with.  We will
-not, however, require its inverse.
+not, however, require the inverse of $\matF$ to proceed.
+
+The optimization implied by \eqq{\eq:linearized} is the same as in
+familiar Principal Components Analysis (PCA), aside from the presence
+of the $F$ matrix, which in essence defines a new metric for the
+variance to be captured by the principal components.  Our solution will follow the typical derivation
+for PCA, but with an additional variable transformation to compensate
+for the presence of $\matF.$
 
 Since $\matX$ is idempotent, we can write
 \begin{align}
@@ -219,9 +229,9 @@ projection (mode) of $\vecn.$
 Transforming the solution back into the space of $\vecn$ yields
 \begin{align}
   \matX & = \matT^{-1} \matV_G \proj_M \matV_G^T \matT \\
+\label{eq:DE}
    & = \left[ \matV_n^T \matLam_n^{1/2} \matV_G \proj_M \right] \left[
      \proj_M \matV_G^T \matLam_n^{-1/2} \matV_n^T \right] \\
-\label{eq:DE}
         & \equiv \matD \matE.
 \end{align}
 We thus obtain our optimal encoding/compression using the nonzero rows of matrix
@@ -270,13 +280,14 @@ In summary, the procedure for dimensional reduction is:
   \item The encoding matrix $E$ and decoding matrix $D$ are formed as
     in \eqq{eq:DE}, taking the inverse $\matLam_n^{-1/2}$ to be zero
     for any eigenvalues that are zero (or within roundoff errors).
-  \item Compress all incoming (mean-subtracted) samples using \eqq{eq:uu}.  They will
+  \item Compress all incoming (mean-subtracted) samples using
+    \eqq{eq:uu}.  The resulting $\vecu$ values will have
     have unit covariance matrix and zero mean.
   \item Construct a continuous density estimator in $\vecu$ space that
     mimics the finite sample distribution.  If the distribution is
     normal, this becomes the multidimensional unit normal.  There
-    is, however,  no \textit{a prior} reason that this must be the case,
-    and something like a normalizing flow will be needed to
+    is, however,  no \textit{a priori} reason that this must be the case,
+    and something like a normalizing flow may be needed to
     approximate this lower-dimensional representation of the prior.
   \item Sample over $\vecu$ space in the Markov Chain that is sampling the
     posterior on the parameters of interest $\vecq,$ using \eqq{eq:UU}
@@ -298,11 +309,57 @@ the prior.
   
 
 \section{Application}\label{sec:app}
+As an example of the application of this straightforward dimensional
+reduction to a high-dimensional nuisance parameter, we examine the
+redshift distribution of one of the bins of ``Maglim''  galaxies used
+as a lens population and clustering tracer in the Year 6 analysis of
+the \textit{Dark Energy Survey (DES)} galaxy catalogs.  In the baseline case,
+there are 6 cosmological parameters of interest, $\vecq = \{\Omega_m,
+\Omega_b, \sigma_8, h, n_s, m_\nu\}.$   The nuisance vector $\vecn$
+has 5--10 parameters in each of the following categories: galaxy
+biases with respect to matter; intrinsic alignments of galaxy shapes
+with the tidal field of the mass; and multiplicative errors in the
+measurement of galaxy shear.  The bulk of the nuisance parameters,
+however, are the descriptions of the redshift distribution $n(z)$ of
+galaxies belonging to each of 10 distinct color-based selections
+applied to the galaxy catalog. Each galaxy sample's $n(z)$ distribution is
+described by \eqq{eq:nzbasis} with 80 coefficients spanning $0<z<4$ at
+intervals of $\Delta z=0.05,$  giving a total of 800 nuisance
+parameters.  Each galaxy sample's $n(z)$ is also constrained to
+integrate to unity, which yields 10 linear constraints on these
+nuisance parameters.
 
-xxxxxxxxx xxxxxxxxx xxxxxxxxx xxxxxxxxx xxxxxxxxx xxxxxxxxx 
-xxxxxxxxx xxxxxxxxx xxxxxxxxx xxxxxxxxx xxxxxxxxx xxxxxxxxx 
-xxxxxxxxx xxxxxxxxx xxxxxxxxx xxxxxxxxx xxxxxxxxx xxxxxxxxx 
-xxxxxxxxx xxxxxxxxx xxxxxxxxx xxxxxxxxx xxxxxxxxx xxxxxxxxx 
+Various forms of information from spectroscopic and photometric galaxy
+surveys are used to constrain the $n(z)$ coefficients. As detailed in
+\citet{y6pz}, these generate a set of samples of possible $n(z)$
+coefficients for each galaxy sample.  We show here the results of the
+mode compression process as applied to one of the nine galaxy samples,
+the ??th lowest redshift of 6 lens bins.  We wish to have the
+cosmological Markov chain sample from this
+galaxy sample's 80-vector vector $\vecn$ of coefficients for its
+redshift distribution, being guided by the available 3000??
+equal-probability samples.
+
+The observable quantities $\vecc$ whose modeling depends upon the these nuisance
+parameters are the angular autocorrelation $w(\theta)$ of the sample
+members, and the cross-correlations $\gamma_t^{(s)}(\theta)$ between
+this sample's positions and the weak gravitational lensing shear
+observed on the samples $1\le s \le 4$ of source galaxies.  A
+covariance matrix spanning all of the experiment's observables is
+available, and for this demonstration we will restrict it to the 30??
+total elements of $\vecc$ that are affected by the $n(z)$ model for
+this bin.
+
+Figure showing violin plot, before/after.
+
+Figure showing modes
+
+Figure showing $\vecu$ distributions.
+
+Describe 1d normalization mapping.
+
+Figure showing histogram of chisq shifts.
+
 
   \begin{acknowledgments}
 
@@ -317,5 +374,8 @@ G.M.B. acknowledges support from NSF grant AST-2205808 and \ldots.
 
 \bibitem[Hadzhiyska et al.(2020)]{hans} Hadzhiyska, B., Alonso, D., Nicola, A., et al.\ 2020, \jcap, 2020, 056. doi:10.1088/1475-7516/2020/10/056
 \end{thebibliography}
+
+\bibiten[TBD]{y6pz} Boyan, William, ??? et al.\ 2025 (in preparation)
+Y6 redshift paper(s).
 
 \end{document}
