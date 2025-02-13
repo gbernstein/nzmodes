@@ -85,7 +85,7 @@ statistics \vecc\ that we are using to constrain a set of parameters of
 interest \vecq.  There is a model $\hatc(\vecq,\vecn)$ for the
 observables which involves the parameters of interest, but also a
 vector \vecn\ of nuisance parameters.  
-We wish to characterized the Bayesian posterior probability
+We wish to characterize the Bayesian posterior probability
 \begin{equation}
   p(\vecq | \vecc) \propto \int dn\, \likeli(\vecc | \vecq, \vecn) p(\vecq) p(\vecn),
 \label{eq:posterior}
@@ -108,7 +108,8 @@ include the coefficients of some linear expansion of the redshift distributions 
   \label{eq:nzbasis}
 \end{equation}
 The $b_k$ are a set of predetermined basis functions for the redshift
-distribution.  In our case there are 10 distinct galaxy populations to be characterized, leading to $O(1000)$ parameters $n_k$ to be considered.
+distribution.  In our case there are 10 distinct galaxy populations to
+be characterized, each with $n(z)$ tabulated at $\approx100$ values, leading to $O(1000)$ parameters $n_k$ to be considered.
 
 One approach would be to run a new MC chain over \vecq\ for each of the samples we have of \vecn, and then concatenate these to effect marginalization over \vecn.  This is clearly infeasible if a large number of \vecn\ samples are needed to characterize the prior in this space.
 
@@ -124,9 +125,9 @@ $\hat{\vecn}(\vecu)$ outputs the $\vecn_\alpha$ sample at the nearest grid point
   domain, and maintains the equal prior probability of each \vecn\
   sample, but the function \emph{output,} and the resultant likelihood
   function of \vecu, are discontinuous.
-Various strategies are proposed to assign the $\vecn_\alpha$ to the grid points in
+Various strategies are proposed by \citet{hyperrank} to assign the $\vecn_\alpha$ to the grid points in
 $\mathcal{H}$ based on summary statistics, to reduce the
-discontinuities.  But the function is never smooth.
+discontinuities---but the function is never smooth.
 As a consequence, many MC samplers become quite inefficient in
 sampling of the cosmological posterior.  In particular, samplers such as \textsc{MultiNest} that assume continuity are rendered nearly non-functional.  As a result, the Y3 cosmological priors could not be evaluated with this method.  Instead, the \vecn\ samples were not used, and an \textit{ad hoc} $p(\vecn)$ was adopted which allowed only shifts and dilations of the mean $n(z)$ of the \vecn\ samples.
 
@@ -138,7 +139,10 @@ A more rigorous and extremely efficient method of marginalizing over high-dimens
 \end{enumerate}
 Under these conditions, \citet{hans} show that the marginalization over \vecn\ is equivalent to adding terms to $\covm_c,$ such that any MC process need not sample \vecn\ at all.
 
-We describe here an approach that is algebraically similar to that of \citet{hans}, but does not require 2nd condition of Gaussianity for the nuisance prior.  Our approach is to seek a linear compression of \vecn\ into a lower-dimensional set of parameters \vecu\ that projects away variations in \vecn\ that do not influence the likelihood $\likeli.$  Standard density estimators can then be applied to the \vecu\ values implied by the known \vecn\ samples to yield a prior $p(\vecu)$ that can be used for the MC chain of the cosmological posterior.  The model \hatc, and hence $\likeli,$ will be continuous over this low-dimensional \vecu\ space, and marginalization over \vecu\ will yield posterior probabilities very close to marginalization over the original \vecn.  
+We describe here an approach that is algebraically similar to that of
+\citet{hans}, but does not require 2nd condition of Gaussianity for
+the nuisance prior, and is likely to be a good approximation even when
+the first and third conditions are not grossly violated.  Our approach is to seek a linear compression of \vecn\ into a lower-dimensional set of parameters \vecu\ that projects away variations in \vecn\ that do not influence the likelihood $\likeli.$  Standard density estimators can then be applied to the \vecu\ values implied by the known \vecn\ samples to yield a prior $p(\vecu)$ that can be used for the MC chain of the cosmological posterior.  The model \hatc, and hence $\likeli,$ will be continuous over this low-dimensional \vecu\ space, and marginalization over \vecu\ will yield posterior probabilities very close to marginalization over the original \vecn.  
 
 \section{Derivation}\label{sec:deriv}
 We assume that we do have a multivariate normal likelihood for the
@@ -255,7 +259,7 @@ The last line defines a transformed Fisher matrix $\matG$ and its
 is minimized if the elements of the unitary matrices satisfy
 $\matV_{X^\prime}^T \matV_G = \matI \; \Rightarrow \; \matV_{X^\prime} = \matV_G,$ and the eigensystem of $G$ is placed
 in order of decreasing eigenvalue $\lambda^G_i.$ The
-elements surviving the project functions yield
+elements surviving the projection $P_{-M}$ yield
 \begin{equation}
   \left\langle \chi^2\right\rangle = \sum_{i>M} \lambda_i^G.
   \label{eq:chiresid}
@@ -490,7 +494,7 @@ of leaving the \emph{observable} consequences of the $n(z)$ variation
 unchanged, we calculate the distribution of
 \begin{equation}
   \chi^2 =  \left[\hatc(\vecq,\vecn) - \hatc(\vecq,\vecn_0) \right]^T
-                                            \left[\covm_c^{-1} \hatc(\vecq,\vecn) - \hatc(\vecq,\vecn_0)\right]
+                                           \covm_c^{-1}  \left[ \hatc(\vecq,\vecn) - \hatc(\vecq,\vecn_0)\right]
 \label{eq:chihist}
 \end{equation}
 for the cases (1) the $\vecn$ are drawn from the input samples, and
@@ -514,6 +518,9 @@ with $\Delta z$ and $s$ being ``shift'' and ``stretch'' parameters.
 Separable Gaussian priors were assigned to $\Delta z$ and $s$ with
 means of 0 and 1, respectively, and standard deviations that equaled
 the RMS variation in the mean and width of the input $n(z)$ samples.
+The shift-stretch model essentially compresses the samples of $n(z)$
+into two parameters, their mean and standard deviation, and executes
+an \textit{ad hoc} reconstruction based on those parameters.
 In the Figure we can see that the shift-stretch model does not in fact
 reproduce the size of the deviations in the $\vecc$ observables that
 is implied by the original samples.
