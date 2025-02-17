@@ -49,7 +49,12 @@
 \affiliation{Department of Physics and Astronomy, University of Pennsylvania, Philadelphia, PA 19104, USA}
 \email{garyb@upenn.edu}
 
-\author{Troxel,William,Boyan,Giulia,Alex Amon,Alex Alarcon,\ldots}
+\author{William d'Assignies}
+\author{Michael Troxel}
+\author{Alex Alarcon}
+\author{Alex Amon}
+\author{Giulia Giannini}
+\author{Boyan Yin}
 
 \begin{abstract}
 	\vspace{0.2in}
@@ -95,26 +100,31 @@ of the data, and $p(\vecq)$ and $p(\vecn)$ are priors on the
 parameters.  This posterior is complex enough that it requires
 approximation by the output of a Markov chain (MC) wandering across the space $(\vecq,\vecn).$
 
-The scenario we address here is when \emph{the prior $p(\vecn)$ is itself known only from a set of samples of $\vecn$ from this distribution.} Most MC samplers require that the posterior be an evaluable function of any value of the parameters, and it is the general task of density estimators to convert the samples of $\vecn$ into an evaluable $p(\vecn).$  But when \vecn\ is of high dimension, two problems arise: first, there may be insufficient available samples to create a viable density estimator; second, sampling of the posterior in (\ref{eq:posterior}) becomes infeasible if the MC must traverse a high-dimensional space.
+The scenario we address here is when \emph{the prior $p(\vecn)$ is
+  itself known only from a set of samples of $\vecn$ from this
+  distribution.} Most MC samplers require that the posterior be an
+evaluable function of any value of the parameters---and hence of the
+priors. It is the general task of density estimators to convert the samples of $\vecn$ into an evaluable $p(\vecn).$  But when \vecn\ is of high dimension, two problems arise: first, there may be insufficient available samples to create a viable density estimator; second, sampling of the posterior in (\ref{eq:posterior}) becomes infeasible if the MC must traverse a high-dimensional space.
 
-A concrete example, which motivated this development,
+A concrete example, which motivated this paper's work,
 is when the observable data \vecc\ are the binned 2-point correlation functions of
 cosmic fields derived from a catalog of galaxies; the parameters of
-interest are cosmological quantities such as $\Omega_m, \sigma_8,$
+interest are cosmological quantities such as the dark matter density
+$\Omega_m,$ the amplitude of density fluctuations $\sigma_8,$
 etc.; and the nuisance parameters $\vecn$
 include the coefficients of some linear expansion of the redshift distributions $n(z)$ of the galaxies being observed:
 \begin{equation}
-  n(z) = \sum_{k=1}^{M} n_k b_k(z).
+  n(z) = \sum_{k=1}^{N} n_k b_k(z).
   \label{eq:nzbasis}
 \end{equation}
 The $b_k$ are a set of predetermined basis functions for the redshift
-distribution.  In our case there are 10 distinct galaxy populations to
-be characterized, each with $n(z)$ tabulated at $\approx100$ values, leading to $O(1000)$ parameters $n_k$ to be considered.
+distribution.  In our case of analyzing the data from the  \textit{Dark Energy Survey} (DES), there are 10 distinct galaxy populations to
+be characterized, each with $n(z)$ tabulated at $\approx100$ values, leading to $N=O(1000)$ parameters $n_k$ to be considered.
 
 One approach would be to run a new MC chain over \vecq\ for each of the samples we have of \vecn, and then concatenate these to effect marginalization over \vecn.  This is clearly infeasible if a large number of \vecn\ samples are needed to characterize the prior in this space.
 
-Facing this problem for the cosmological analyses of the 3-year data (Y3)
-of the \textit{Dark Energy Survey} (DES),
+Facing this problem for the cosmological analyses of the 3-year data
+(Y3) from DES,
 \citet{hyperrank} devised a scheme whereby
 the samples of \vecn\ are placed in a grid within some $M$-dimensional
 unit hypercube $\mathcal{H}$.  The coordinates \vecu\ within the hypercube
@@ -129,7 +139,12 @@ Various strategies are proposed by \citet{hyperrank} to assign the $\vecn_\alpha
 $\mathcal{H}$ based on summary statistics, to reduce the
 discontinuities---but the function is never smooth.
 As a consequence, many MC samplers become quite inefficient in
-sampling of the cosmological posterior.  In particular, samplers such as \textsc{MultiNest} that assume continuity are rendered nearly non-functional.  As a result, the Y3 cosmological priors could not be evaluated with this method.  Instead, the \vecn\ samples were not used, and an \textit{ad hoc} $p(\vecn)$ was adopted which allowed only shifts and dilations of the mean $n(z)$ of the \vecn\ samples.
+sampling of the cosmological posterior.  In particular, samplers such
+as \textsc{MultiNest} that assume continuity are rendered nearly
+non-functional.  As a result, the Y3 cosmological priors could not be
+evaluated with this method.  Instead, the \vecn\ samples were not
+used, and an \textit{ad hoc} $p(\vecn)$ was adopted which allowed only
+shifts and dilations of the mean $n(z)$ of the \vecn\ samples [see \eqq{eq:zs}].
 
 A more rigorous and extremely efficient method of marginalizing over high-dimensional nuisance parameters was proposed by \citet{hans}, for the case where the following restrictions apply:
 \begin{enumerate}
@@ -235,7 +250,7 @@ eigenvectors $V_X$ that minimize
          \proj_{-M} V_X^T \right], \\
   C_n & \equiv \left\langle \vecn \vecn^T \right\rangle.
 \end{align}
-This optimization is easier if we transform first the systematic variables to
+This optimization is easier if we first transform the systematic variables to
 $\vecn^\prime =\matT\vecn$ such that $\covm_{n^\prime}=\matI$, \ie\
 make the elements of $\vecn$ uncorrelated and unit-variance.  This
 is accomplished by finding the eigensystem $\covm_n=\matV_n \matLam_n
@@ -299,7 +314,7 @@ normalization constraint on the initial $\vecn_\alpha$ values.  Any
 such (nearly) zero element $j$ of $\matLam_n$ has a corresponding
 eigenvector $\vecv_j$ of the $\vecn$ space which has zero amplitude
 in all of the input samples $\vecn_\alpha,$ so that the $\vecn$ are
-confined to a subspace---the reconstructed $\hat\vecn$ should also be.
+confined to a subspace---therefore the reconstructed $\hat\vecn$ should also be.
 The compressed
 representations $\vecu_\alpha$ and reconstructed $\hat\vecn_\alpha$
 should therefore be unaffected by the presence of any $\vecv_j$
@@ -354,15 +369,17 @@ the prior.
 As an example of the application of this straightforward dimensional
 reduction to a high-dimensional nuisance parameter, we examine the
 redshift distribution of one of the bins of ``Maglim''  galaxies used
-as a lens population and clustering tracer in the Year 6 analysis of
-the \textit{Dark Energy Survey (DES)} galaxy catalogs.  Each
+as a lens population and clustering tracer in the Year 6 (Y6) analysis of
+the DES galaxy catalogs.  Each
 Maglim bin's members are selected with cuts on galaxy fluxes and
 colors in an attempt  to generate a sample that is confined to a
 particular redshift range, as described in \citet{y6gg}.  Once each bin's
 sample is chosen, a combination of 
 photometric techniques \citep{y6pz} and clustering information
-\citep{y6wz} are used to generate samples from the true $n(z)$
-distributions of its members.
+\citep{y6wz} is used to generate samples from the posterior
+distribtuion of  the $n(z)$ distribution of the bin members, conditioned
+on the photometric and clustering data.
+
 In the baseline case,
 there are 6 cosmological parameters of interest, $\vecq = \{\Omega_m,
 \Omega_b, \sigma_8, h, n_s, m_\nu\}.$   The nuisance vector $\vecn$
@@ -383,26 +400,26 @@ Thus we turn to the modal projection technique herein to reduce the
 dimensionality to those directions in $\vecn$ space in which the samples span a large
 enough range to alter the $\hatc(\vecn)$ at detectable levels. 
 
-The observable quantities $\vecc$ whose modeling depends upon the these nuisance
-parameters are the angular autocorrelation $w(\theta)$ of the sample
-members, and the cross-correlations $\gamma_t^{(s)}(\theta)$ between
-this sample's positions and the weak gravitational lensing shear
-observed on the samples $1\le s \le 4$ of source galaxies.  The
+The observable quantities $\vecc$ whose modeling depends upon these nuisance
+parameters are the angular autocorrelation $w(\theta)$ of the 
+galaxies, and the cross-correlations $\gamma_t^{(s)}(\theta)$ between
+these galaxies' positions and the weak gravitational lensing shear
+observed from groups $1\le s \le 4$ of source galaxies.  The
 derivatives of the model for each observable, and the expected
 covariance, are calculated from theory with the tools described in
-\citet{y6model}.
+\citet{y6model} and the \texttt{Cosmosis} software\footnote{\url{https://cosmosis.readthedocs.io/en/latest/}} \citet{cosmosis}.
 
 \begin{figure}
   \center
-  \includegraphics[width=0.6\textwidth]{violin.pdf}
+  \includegraphics[width=0.6\textwidth]{bin4_violins.pdf}
 \caption{Violin plots for the redshift probability distribution $n(z)$
-  of galaxies in lens bin 1 for the DES Y6 analysis.  The blue regions
+  of galaxies in lens bin 4 for the DES Y6 analysis.  The blue regions
   show the distributions for the samples of $\vecn$ derived from
   photometric and clustering information.  The orange violins are for
   $\vecn$ values drawn defined by (1) compressing the original $\vecn$
-  into 5 modes with coefficients $\vecu,$ then (2) drawing values of
-  $\vecu$ from unit normal distributions and transforming them to
-  match the $\vecu$ 1d distribution of the input samples.  The dashed
+  into 3 modes with coefficients $\vecu,$ then (2) drawing values of
+  $\widetilde u_i$ from unit normal distributions and transforming each
+  component $u_i$ to match the 1d distribution of the input samples' $u_i.$.  The dashed
   line connects the mean values of $n(z),$ which are the same for
   generated samples as for the input samples, by construction.
   Although the $n(z)$ functions are calculated out to $z=4,$ we
@@ -412,7 +429,7 @@ covariance, are calculated from theory with the tools described in
 \end{figure}
 
 We present results for mode-compression sampling of the $n(z)$
-parameters for the lowest-redshift bin.  Figure~\ref{fig:violins}
+parameters for redshift bin 4 of the DES Y6 lens galaxies.  Figure~\ref{fig:violins}
 plots the distributions of the individual elements of $n(z)$ in the
 input 3000 samples.  As per the procedure desribed in this paper, the
 mean \vecn\ is subtracted from each sample and the covariance
@@ -422,44 +439,51 @@ calculate the decomposition in \eqq{eq:defG}.
 
 \begin{figure}
   \center
-  \includegraphics[width=0.6\textwidth]{chiresids.pdf}
-\caption{The size of the $\chi^2$ of modeling error attributable to compressing the
+  \includegraphics[width=0.49\textwidth]{chiresids.pdf}
+   \includegraphics[width=0.49\textwidth]{modes.pdf}
+\caption{At left: The size of the $\chi^2$ of modeling error attributable to compressing the
   $\vecn$ samples down to $M$ modes is plotted vs $M$.  The values
   drop exponentially with $M,$ and our chosen criterion of
-  $\chi^2<0.15$ is attained with $M=5$ for this bin's $n(z).$}
-  \label{fig:chiresid}
-\end{figure}
+  $\chi^2<0.025$ is attained with $M=3$ for this bin's
+  $n(z).$
+  At right: The modes of variation $U_i(z),$, \ie\ the rows of the decompression
+  matrix $\matD$ in \eqq{eq:DE} are plotted vs redshift.  Each mode is
+  multiplied by a unit-variance stochastic coefficient $u_i$, then
+  they are summed with the mean $\bar\vecn(z),$ to form an $n(z)$
+  sample.  Higher-numbered modes have
+  observable consequences of decreasing statistical significance.}
+  \label{fig:chiresid}\end{figure}
 
-Figure~\ref{fig:chiresid} plots the values of unmodelled
+The left plot in Figure~\ref{fig:chiresid} shows the values of unmodelled
 $\chi^2$ vs the dimension $M$ of the compressed space, as per
 \eqq{eq:chiresid}.  This modelling error induced by compression drops
 exponentially with the number of retained modes, and our chosen criterion of
-$\chi^2<0.15$ is attained with $M=5$ modes.
+$\chi^2<0.025$ is attained with $M=3$ modes for this bin.  The modes
+$U_i(z),$ \ie\ the rows of the decompression matrix $\matD,$ are
+plotted on the right of Figure~\ref{fig:chiresid}.  Recall that each mode will be multiplied by
+a random deviate $u$ with unit variance and added to the mean $\vecn$
+to yield a sample from the prior.
+
 
 \begin{figure}
   \center
-  \includegraphics[width=0.6\textwidth]{modes.pdf}
-  \includegraphics[width=0.38\textwidth]{uhist.pdf}
-\caption{At left are plotted the modes, or rows of the decompression
-  matrix $\matD$ in \eqq{UU}, that are derived by our method for $\vecn.$
- At right are shown the distributions of the coefficients
-  $\vecu$ of the 5 modes that are found by compressing the input
-  samples.  Some of the five are substantially non-Gaussian.}
-\label{fig:modes}
+  \includegraphics[width=0.7\textwidth]{bin4_corner.pdf}
+  \caption{In orange is a corner plot of the distribution of the mode coefficients,
+    \ie\ the elements of $\vecu = \matE \vecn.$
+  of the input samples after encoding.  The coefficients, especially 
+  $u_1,$ are significantly skewed so a normal distribution would be an
+  inaccurate model.  Instead we model each $u_i$ as an
+  ``denormalizing'' function of a unit-normal variable, as per
+  \eqq{eq:denorm}.  The blue histograms and contours show the
+  distributions obtained using this element-by-element transformation
+  technique, which is seen to accurately reproduce the distribution of
+  the input samples.}
+\label{fig:corner}
 \end{figure}
 
-The left-hand panel of Figure~\ref{fig:modes} plots the 5 retained
-modes of variation of $n(z),$ \ie\ the rows of the decompression
-matrix $\matD$ in \eqq{UU}.   Recall that each mode will be multiplied by
-a random deviate $u$ with unit variance and added to the mean $\vecn$
-to yield a sample from the prior.
- Note that although the successively higher-order modes 
-are less detectable by the data, they are not necessarily becoming
-numerically smaller perturbations to $n(z)$.
-
-The right-hand panel of Figure~\ref{fig:modes} plots the distributions
-of the $M=5$ components of the compressed $\vecu$ representations of the
-3000 input samples.  Several of them are substantially non-Gaussian,
+Figure~\ref{fig:corner} plots the distributions
+of the $M=3$ components of the compressed $\vecu$ representations of the
+3000 input samples.  Some are substantially non-Gaussian,
 so a unit-normal prior on $\vecu$ will not faithfully represent the
 input samples---a better density estimator is required.  We find in
 this case (and in all other DES cases) that it is sufficient to
@@ -468,6 +492,7 @@ components.  This is done by tabulating a normalizing function $f_i$
 for each mode defined by
 \begin{equation}
   {\rm CDF}_n\left[ f_i(u_i) \right] = {\rm CDF}(u_i),
+\label{eq:denorm}
 \end{equation}
 where the left side is the cumulative distribution function of the
 unit normal, and the right-hand side is the CDF of the $u_i$ values
@@ -481,9 +506,6 @@ redshift distribution via a 2-step process:
   u_i & =f_i^{-1}(\widetilde{u}_i); \\
   \vecn & = \matD \vecu.
 \end{align}
-
-\textit{Corner plot of $\widetilde{\vecu})$? ?}
-
 
 The orange violins in Figure~\ref{fig:violins} show the distributions
 of the $n(z)$ values that are generated by drawing $\widetilde{\vecu}$
@@ -504,6 +526,30 @@ vector $\vecn_0$ at some chosen nominal value of cosmological
 parameters $\vecq$ (we also fix the other nuisance parameters of the
 DES model for this test).
 
+\begin{figure}
+  \center
+  \includegraphics[width=0.6\textwidth]{bin4_chisq.pdf}
+\caption{The histograms show the deviations of the predicted observable $w(\theta)$ quantities in
+  DES Y6 cosmological analysis, as measured by the $\chi^2$ in
+  \eqq{eq:chihist}, as we allow the $n(z)$ parameters to vary.  The
+  shaded green histogram shows the variation using the original 3000 samples of
+  $n(z)$ produced by the photometric and clustering redshift studies.
+  The dashed yellow histogram results from
+  drawing 3-dimensional $\widetilde{\vecu}$ values from a unit
+  normal and decompressing them into $n(z)$ realizations using our
+  method.  This lower-dimensional model for the prior on $n(z)$
+  reproduces the original samples' result very well.  By comparison,
+  the dash-dotted red histogram generates samples of $n(z)$ using
+  the \textit{ad hoc} method of \eqq{eq:zs}, which reproduces the
+  observable behavior of the original samples very well.  This method's two
+  parameters $z$ and $s$ are given priors to match the distributions
+  of the mean of $n(z)$ over $z$, and the standard deviation of $z$,
+  present in the input samples.  The \textit{ad hoc} method produces
+  $n(z)$ fluctuations with $\approx20\%$ larger $\chi^2$ from the mean,
+  on average, than the input distribution has.}
+\label{fig:chihist}
+\end{figure}
+
 Figure~\ref{fig:chihist} shows the results: the $\chi^2$ distribution
 for the input samples is indistinguishable from that of the samples
 generated by our compressed, normalized representation.
@@ -513,6 +559,7 @@ that case, the $n(z)$ for each galaxy sample was given an \textit{ad
   hoc} variation of the form
 \begin{equation}
   n(z) = n_0\left(\frac{z-\Delta\,z}{s}\right),
+  \label{eq:zs}
 \end{equation}
 with $\Delta z$ and $s$ being ``shift'' and ``stretch'' parameters.
 Separable Gaussian priors were assigned to $\Delta z$ and $s$ with
@@ -523,45 +570,67 @@ into two parameters, their mean and standard deviation, and executes
 an \textit{ad hoc} reconstruction based on those parameters.
 In the Figure we can see that the shift-stretch model does not in fact
 reproduce the size of the deviations in the $\vecc$ observables that
-is implied by the original samples.
+is implied by the original samples; the mean $\chi^2$ induced by the
+shift-stretch samples is $\approx20\%$ larger than the input samples.  
+This mismatch indicates that some cosmologically relevant information in the
+original samples is being lost, or that the shift-stretch samples are
+imposing cosmological constraints that are not present in the original
+samples.
 
-\begin{figure}
-  \center
-  \includegraphics[width=0.6\textwidth]{chihist.pdf}
-\caption{The histograms show the deviations of the predicted observable $w(\theta)$ quantities in
-  DES Y6 cosmological analysis, as measured by the $\chi^2$ in
-  \eqq{eq:chihist}, as we allow the $n(z)$ parameters to vary.  The
-  ??? histogram shows the variation using the original 3000 samples of
-  $n(z)$ produced by the photometric and clustering redshift studies.
-  The ??? histogram results from
-  drawing 5-dimensional $\widetilde{\vecu}$ values from a unit
-  Gaussian and decompressing them into $n(z)$ realizations using our
-  method.  This lower-dimensional model for the prior on $n(z)$
-  reproduces the original samples' result very well.  By comparison,
-  a \textit{ad hoc} prior for $n(z)$ which reproduces the variations in only the mean
-  and width of the input $n(z)$ samples is less accurate in preserving
-  the fluctuations in the observable quantity under the
-  prior. \textbf{Prelim version of figure.} }
-\label{fig:chihist}
-\end{figure}
+\section{Summary}
+  We present a linear dimensionality reduction technique that has the
+  aim of making it feasible to produce continuous density estimators
+  for nuisance parameters that are known only from a set of samples in
+  a high-dimensional space $\vecn.$  This is essentially a principle
+  components analysis that is adjusted to separate contributions to
+  the detectable consequences of $\vecn$ rather than contributions to
+  the Euclidean norm of $\vecn.$   This method enables a rigorous
+  marginalization over the distribution of $\vecn$ even in for
+  non-Gaussian distributions, as long as the derivatives of the
+  log-likelihood of the data with respect to $\vecn$ are nearly
+  constant over the posterior domain.  The mode-projection technique
+  is also useful as a method of projecting away irrelevant
+  noise fluctuations in $\vecn.$
+
+  We have shown the utility of this technique for the case when
+  $\vecn$ represents the redshift distributions of galaxies in DES.
+  The resulting modeled distribution of $n(z)$'s is more faithful to
+  the original sample than the previous \textit{ad hoc} method of
+  shifting and stretching the mean $n(z)$ to mimic the samples'
+  range.  While this difference has minimal consequence for the
+  posterior cosmological parameter estimates in the DES Y6 analysis,
+  the mode-projection method is better motivated and will produce more
+  accurate posteriors in future experiments where the $n(z)$
+  prior's uncertainty is a dominant contributor to the cosmological posterior.
 
 
   \begin{acknowledgments}
-
-
 G.M.B. acknowledges support from NSF grant AST-2205808 and \ldots.
 
 \end{acknowledgments}
 \begin{thebibliography}{dummy}
 %\bibliography
 %\bibliographystyle{aasjournal}
+\bibitem[d'Assignies et al.(2025)]{y6wz} d'Assignies, W. et al.\ 2025 (WZ paper)
+
 \bibitem[Cordero et al.(2022)]{hyperrank} Cordero, J.~P., Harrison, I., Rollins, R.~P., et al.\ 2022, \mnras, 511, 2170. doi:10.1093/mnras/stac147
+
+\bibitem[Giannini et al.(2025)]{y6gg} Giannini, G. et al.\ 2025 (lenses paper)
 
 \bibitem[Hadzhiyska et al.(2020)]{hans} Hadzhiyska, B., Alonso, D., Nicola, A., et al.\ 2020, \jcap, 2020, 056. doi:10.1088/1475-7516/2020/10/056
 
+\bibitem[Myles et al.(2021)]{y3pz}
+  Myles, J. et al.\ 2021, \mnras, 505, 4249,
+  doi:10.1093/mnras/stab1515
+  
 \bibitem[Yin et al.(2025)]{y6pz} Yin, B. et al.\ 2025 (PZ paper)
-\bibitem[d'Assignies et al.(2025)]{y6wz} d'Assignies, W. et al.\ 2025 (WZ paper)
-\bibitem[Giannini et al.(2025)]{y6gg} Giannini, G. et al.\ 2025 (lenses paper)
+  
+\bibitem[Zuntz et al.(2015)]{cosmosis}
+  Zuntz, J. et al. 2015, Astronomy and Computing, 12, 45,
+  doi:10.1016/j.ascom.2015.05.005
+
+\bibitem[??? et al.(2025)]{y6model}
+  Y6 modeling paper ???
   
 \end{thebibliography}
 
