@@ -1,6 +1,6 @@
 % section/paper on sampling with sampled priors.
 % \documentclass[preprint,linenumbers]{aastex631} # 6.31 fails with \align!!
-\documentclass[linenumbers, onecolumn]{aastex63}
+\documentclass[linenumbers, onecolumn]{aastex7}
 \usepackage{xcolor}
 
 \usepackage{natbib}
@@ -48,22 +48,23 @@
 
 \title{Sampling Bayesian probabilities given only sampled priors}
 
-\author[0000-0002-8613-8259]{Gary M. Bernstein}
-\affiliation{Department of Physics and Astronomy, University of Pennsylvania, Philadelphia, PA 19104, USA}
-\email{garyb@upenn.edu}
+\include{authors.tex}
+% \author[0000-0002-8613-8259]{Gary M. Bernstein}
+% \affiliation{Department of Physics and Astronomy, University of Pennsylvania, Philadelphia, PA 19104, USA}
+% \email{garyb@upenn.edu}
 
-\author{William d'Assignies}
-\author{Michael Troxel}
-\author{Alex Alarcon}
-\author{Alex Amon}
-\author{Giulia Giannini}
-\author{Boyan Yin}
-\author{Builders\ldots} %%%%
+% \author{William d'Assignies}
+% \author{Michael Troxel}
+% \author{Alex Alarcon}
+% \author{Alex Amon}
+% \author{Giulia Giannini}
+% \author{Boyan Yin}
+% \author{Builders\ldots} %%%%
 
 \begin{abstract}
 	\vspace{0.2in}
 A typical Bayesian inference on the values of some parameters of
-interest $\vecq$ from some data $D$ would run a Markov Chain (MC) to sample
+interest $\vecq$ from some data $D$ involves running a Markov Chain (MC) to sample
 from the posterior $p(\vecq,\vecn | D) \propto \likeli(D | \vecq,\vecn)
 p(\vecq) p(\vecn),$ where $\vecn$ are some nuisance parameters.  In
 many cases, the nuisance parameters are high-dimensional, and their
@@ -106,7 +107,8 @@ approximation by the output of a Markov Chain (MC) wandering across the space $(
 
 The scenario we address here is when \emph{the prior $p(\vecn)$ is
   itself known only from a set of samples of $\vecn$ from this
-  distribution.} Most MC samplers require that the posterior be an
+  distribution.} Most MC samplers require that the posterior (and
+hence the prior and likelihood) be an
 evaluable function of any value of the parameters. It is the general task of density estimators to convert the samples of $\vecn$ into an evaluable $p(\vecn).$  But when \vecn\ is of high dimension, two problems arise: first, there may be insufficient available samples to create a viable density estimator; second, sampling of the posterior in (\ref{eq:posterior}) becomes infeasible if the MC must traverse a high-dimensional space.
 
 A concrete example, which motivated this paper's work,
@@ -388,9 +390,9 @@ as a lens population and clustering tracer in the Year 6 (Y6) analysis of
 the DES galaxy catalogs.  Each of these Maglim ``lens bins''
 is selected with cuts on galaxy fluxes and
 colors in an attempt to generate a sample that is confined to a
-particular redshift range, as described in \citet{y6gg}.  Once each bin's
+particular redshift range, as described in \citet{y6maglim}.  Once each bin's
 sample is chosen, a combination of 
-photometric techniques \citep{y6pz} and clustering information
+photometric techniques \citep{y6lenspz,y6pz} and clustering information
 \citep{y6wz} is used to generate samples from the posterior
 distribtuion of  the $n(z)$ distribution of the bin members, conditioned
 on the photometric and clustering data.
@@ -590,6 +592,18 @@ original samples is being lost, or that the shift-stretch samples are
 imposing cosmological constraints that are not present in the original
 samples.
 
+For simplicity, we have demonstrated this method for a case in which
+$\vecn$ specifies the $n(z)$ function for a single sample of DES
+galaxies.  The method is fully applicable to any set of nuisance
+parameters for which we are given a set of samples from $p(\vecn).$
+For instance, in the DES Y6 analysis, we use a $\vecn$ that is a
+concatenation of the parameters of $n(z)$ for 4 bins of lens source
+galaxies.  Since each output sample from the  redshift-estimate
+process describes all 4 bins, we know the cross-correlations between
+the bins' $n(z)$ behavior, and the compression process described
+herein will properly preserve these correlations in the subsequent
+cosmological analysis.
+
 \section{Summary}
   We present a linear dimensionality reduction technique that has the
   aim of making it feasible to produce continuous density estimators
@@ -659,16 +673,18 @@ the pipelines and validation tests; and promoting the science analysis.
 \begin{thebibliography}{dummy}
 %\bibliography
 %\bibliographystyle{aasjournal}
+% Y6 WZ paper
 \bibitem[d'Assignies et al.(2025)]{y6wz} d'Assignies, W. et al.\ 2025
-  (WZ paper) ???
+  (in preparation)
+
 \bibitem[Bridle et al.(2002)]{bridle02}
 Bridle, S. L., Crittenden, R., Melchiorri, A., Hobson, M. P., Kneissl, R., and Lasenby, A. N. 2002, \mnras, 335, 1193, 
 doi:10.1046/j.1365-8711.2002.05709.x
  
 \bibitem[Cordero et al.(2022)]{hyperrank} Cordero, J.~P., Harrison, I., Rollins, R.~P., et al.\ 2022, \mnras, 511, 2170. doi:10.1093/mnras/stac147
 
-\bibitem[Giannini et al.(2025)]{y6gg} Giannini, G. et al.\ 2025
-  (lenses paper) ????
+% lenses paper
+\bibitem[Giannini et al.(2025)]{y6lenspz} Giannini, G. et al.\ 2025 (in preparation)
 
 \bibitem[Hadzhiyska et al.(2020)]{hans} Hadzhiyska, B., Alonso, D., Nicola, A., et al.\ 2020, \jcap, 2020, 056. doi:10.1088/1475-7516/2020/10/056
 
@@ -676,15 +692,19 @@ doi:10.1046/j.1365-8711.2002.05709.x
   Myles, J. et al.\ 2021, \mnras, 505, 4249,
   doi:10.1093/mnras/stab1515
   
-\bibitem[Yin et al.(2025)]{y6pz} Yin, B. et al.\ 2025 (PZ paper) ???
+\bibitem[Giannini et al.(2025)]{y6maglim} Weaverdyck, N. et al.\ 2025 (in preparation)
+
+\bibitem[Yin et al.(2025)]{y6pz} Yin, B. et al.\ 2025 (in preparation)
   
 \bibitem[Zuntz et al.(2015)]{cosmosis}
   Zuntz, J. et al. 2015, Astronomy and Computing, 12, 45,
   doi:10.1016/j.ascom.2015.05.005
 
-\bibitem[??? et al.(2025)]{y6model}
-  Y6 modeling paper ???
+% Y6 modelling paper
+\bibitem[Sanchez-Cid et al.(2025)]{y6model} Sanchez-Cid et al.\ 2025
+  (in preparation)
   
 \end{thebibliography}
 
+\allauthors
 \end{document}
