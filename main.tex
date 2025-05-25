@@ -8,6 +8,10 @@
 \usepackage{enumitem}
 
 \shortauthors{Bernstein et al.}
+\shorttitle{Sampling sampled priors}
+\reportnum{DES-2025-0886}
+\reportnum{FERMILAB-PUB-25-0362-PPD}
+
 
 \newcommand{\ed}[1]{{\color{red}{#1}}}
 \newcommand\gary[1]{{\color{red} \{\textbf{GMB}: #1\}}}
@@ -44,22 +48,15 @@
 \newcommand{\DD}{\Delta_D}
 \newcommand{\likeli}{\mathcal{L}}
 \newcommand{\trace}{\text{Tr}}
+
+
 \begin{document}
 
 \title{Sampling Bayesian probabilities given only sampled priors}
 
-\include{authors.tex}
-% \author[0000-0002-8613-8259]{Gary M. Bernstein}
-% \affiliation{Department of Physics and Astronomy, University of Pennsylvania, Philadelphia, PA 19104, USA}
-% \email{garyb@upenn.edu}
 
-% \author{William d'Assignies}
-% \author{Michael Troxel}
-% \author{Alex Alarcon}
-% \author{Alex Amon}
-% \author{Giulia Giannini}
-% \author{Boyan Yin}
-% \author{Builders\ldots} %%%%
+\include{authors.tex}
+\correspondingauthor{G.~M.~Bernstein}
 
 \begin{abstract}
 	\vspace{0.2in}
@@ -86,7 +83,6 @@ of 2-point correlation functions of weak lensing fields and galaxy
 density in the \textit{Dark Energy Survey}, where $\vecn$ is a binned representation of the redshift distrbution
 $n(z)$ of the galaxies.
 \end{abstract}
-\reportnum{}
 
 \section{Motivation} \label{sec:intro}
 
@@ -372,8 +368,13 @@ In summary, the procedure for dimensional reduction is:
 The ability to accomodate non-Gaussian distributions of the
 nuisance-parameter space is the principle
 advantage of our method over the single-step covariance-inflation
-method of \citet{hans}.
-But even if the \vecu\ prior is well approximated as multivariate normal,
+method of \citet{hans}.  A further advantage of our
+compression$+$density-estimator scheme over covariance inflation is
+that nonlinearities in the data model, including presence of
+significant $\partial^2\hatc/\partial\vecq\partial\vecn,$ will be
+correctly handled in the inference to the extent that the higher
+derivatives are confined to the compressed subspace of $\vecn.$ 
+But even in the case where linearity and gaussianity in \vecu\ hold,
 there are practical advantages of compressing the nuisance 
 variables and retaining them in the cosmological Markov chain rather
 than using the covariance-inflation method for analytic
@@ -602,7 +603,11 @@ galaxies.  Since each output sample from the  redshift-estimate
 process describes all 4 bins, we know the cross-correlations between
 the bins' $n(z)$ behavior, and the compression process described
 herein will properly preserve these correlations in the subsequent
-cosmological analysis.
+cosmological analysis.  In the DES Y6 analysis, we have also extended
+the nuisance parameter vector $\vecn$ to include the multiplicative
+errors on the shear measurement method, and create a compressed
+$\vecu$ that captures correlations between the multiplicative errors
+and the $n(z)$ estimates.
 
 \section{Summary}
   We present a linear dimensionality reduction technique that has the
@@ -615,7 +620,12 @@ cosmological analysis.
   marginalization over the distribution of $\vecn$ even for
   non-Gaussian distributions, as long as the derivatives of the
   log-likelihood of the data with respect to $\vecn$ are nearly
-  constant over the posterior domain.  The mode-projection technique
+  constant over the posterior domain.  Indeed the effect of the
+  nuisance parameters on the inference will be correctly calculated
+  even if these derivatives vary across the posterior domain, as long
+  as the statistically relevant values of $\vecn$ do not deviate
+  significantly from the linear subspace defined by our compression.
+The mode-projection technique
   is also useful as a method of projecting away irrelevant
   noise fluctuations in $\vecn.$
 
