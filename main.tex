@@ -1,6 +1,7 @@
 % section/paper on sampling with sampled priors.
 % \documentclass[preprint,linenumbers]{aastex631} # 6.31 fails with \align!!
-\documentclass[linenumbers, onecolumn]{aastex7}
+%\documentclass[linenumbers, onecolumn]{aastex7}
+\documentclass[onecolumn]{aastex7}
 \usepackage{xcolor}
 
 \usepackage{natbib}
@@ -80,7 +81,7 @@ to principal components analysis, and is less restrictive on
 $p(\vecn)$ than other proposed solutions to this issue.
 We demonstrate this ``mode projection'' technique using the analysis
 of 2-point correlation functions of weak lensing fields and galaxy
-density in the \textit{Dark Energy Survey}, where $\vecn$ is a binned representation of the redshift distrbution
+density in the \textit{Dark Energy Survey}, where $\vecn$ is a binned representation of the redshift distribution
 $n(z)$ of the galaxies.
 \end{abstract}
 
@@ -395,7 +396,7 @@ particular redshift range, as described in \citet{y6maglim}.  Once each bin's
 sample is chosen, a combination of 
 photometric techniques \citep{y6lenspz,y6pz} and clustering information
 \citep{y6wz} is used to generate samples from the posterior
-distribtuion of  the $n(z)$ distribution of the bin members, conditioned
+distribution of  the $n(z)$ distribution of the bin members, conditioned
 on the photometric and clustering data.
 
 In the simplest case,
@@ -597,7 +598,7 @@ For simplicity, we have demonstrated this method for a case in which
 $\vecn$ specifies the $n(z)$ function for a single sample of DES
 galaxies.  The method is fully applicable to any set of nuisance
 parameters for which we are given a set of samples from $p(\vecn).$
-For instance, in the DES Y6 analysis, we use a $\vecn$ that is a
+For instance, in the DES Y6 analysis, we use an $\vecn$ that is a
 concatenation of the parameters of $n(z)$ for 4 bins of lens source
 galaxies.  Since each output sample from the  redshift-estimate
 process describes all 4 bins, we know the cross-correlations between
