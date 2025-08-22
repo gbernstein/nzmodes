@@ -1,0 +1,321 @@
+> 
+> The authors present an intriguing linear compression and decompression technique
+> for Bayesian inference when the prior distribution of nuisance parameters is
+> available only through samples from prior research. The mathematical concepts
+> are engaging, and the method is illustrated with a numerical example. However, I
+> have some suggestions to enhance clarity, rigor, and comparability with existing
+> methods. Below, I outline my comments to support the authors in refining their
+> work.
+> 
+> 1. Title: The phrase "Sampling Bayesian probabilities" may be
+> unclear. Probability, as a mapping from an event to a value between 0 and 1, is
+> consistent across Bayesian and frequentist frameworks. Could the authors clarify
+> what is meant by "Bayesian probabilities" in the main text and consider a title
+> that more precisely reflects the manuscript's focus? For example, if the intent
+> is to generate samples from a posterior distribution, a phrase like "sampling
+> from a probability distribution" might be more standard. A revised title could
+> better capture the core contribution.
+>
+
+We have a new title, "Sampling posterior distributions when only samples from a prior are available"
+
+> 2. Abstract: The assumption that the joint prior p(q, n) factorizes as p(q)p(n)
+> holds only when q and n are independent. As the abstract discusses Bayesian
+> inference generally, it may be helpful to clarify this assumption or use a more
+> general expression for the joint prior.
+
+It is now clear in the abstract and text that we are assuming separable priors for the nuisance parameters and the parameters of interest (Line 26).
+
+> 
+> 3. Abstract: The claim that the issue of a prior p(n) defined only by samples is
+> common may benefit from adjustment. If this is a specific case, replacing "many"
+> with "some" could enhance clarity. If the authors believe this issue is
+> widespread, citing Bayesian textbooks or references addressing this scenario
+> would strengthen the claim. Additionally, to ensure adherence to Bayesian
+> principles, could the authors confirm that the data used in this study are
+> distinct from those used to construct the prior samples, avoiding potential
+> reuse of data?
+>
+
+"many" -> "some" in the abstract.  And in the opening paragraph, we add text stating that the prior on nuisance parameters would come from distinct observational data (line 29).
+
+> 4. Abstract and Section 1: The likelihood function, as defined by R. A. Fisher,
+> is typically a function of model parameters given the data, denoted as L(q, n|D)
+> or L(q, n). The current notation L(D | q, n) as a function of data given
+> parameters may cause confusion. If the authors intend to use f(D|q, n) to
+> represent the probability density of the data given parameters, explicitly
+> defining it as L(q, n) = f(D|q, n) could clarify this. A reference to standard
+> definitions, such as those on Wikipedia, might help.
+> 
+> 5. Section 1: The term "Bayesian posterior probability" before Equation (1)
+> might be more accurately described as the "Bayesian posterior density," as
+> Equation (1) represents a density, not a probability.
+>
+
+Our nomenclature is in agreement already with that given in the Wikipedia entry for "Posterior probability", which states Bayes's Thm as "The posterior probability is therefore proportional to the product Likelihood · Prior probability," citing Ross.  We have placed a footnote to that effect on the opening page.  
+
+> 6. Section 1: The statement that the prior p(n) is known only through samples
+> could be clarified. If the authors assume these samples are drawn from an
+> unknown prior p(n), revising the sentence to avoid implying knowledge of p(n)
+> might reduce confusion. For example, stating that the samples are assumed to
+> represent p(n) could be clearer.
+>
+
+There is now explicit text that we consider a case where p(n) cannot be directly evaluated (line 30).
+
+> 7. Section 1: The manuscript notes that insufficient samples for
+> high-dimensional n may hinder density estimation but does not appear to address
+> this issue. Could the authors clarify their proposed solution for cases with
+> limited samples, or confirm if this remains a challenge under the
+> compression-decompression approach?
+>
+
+We believe that the projection of the prior into a space of much smaller dimension *is* the proposed solution to this problem, since far fewer samples are necessary to build a usable density estimator in the compressed space.  In our example case of an 80-dimensional nuisance vector, density estimation was impossible in the full space even with millions of samples, but thousands of samples more than suffice to build the density estimator in the 3-dimensional compressed space.
+
+> 8. Section 1: The discussion of running a new Markov Chain (MC) for each sample
+> of n to marginalize over n is described as infeasible for a large number of
+> samples. Could the authors elaborate on why this is infeasible and whether a
+> smaller number of samples would make it feasible? Additionally, specifying what
+> constitutes a "large" or "small" number of samples (e.g., 100 or 1000 vectors)
+> would provide useful context, especially given the numerical example.
+>
+
+We now state "thousands or more" instand of "large number" - although in many of our chains, running even one full chain is considered expensive, so having to repeat this even 10 times could cross the threshold out of affordability (line 48).
+
+> 9. Section 1: The notation c_hat for the model is unconventional, as a hat
+> typically denotes an estimator. Consider using c = g(q, n) for a deterministic
+> model or g(c|q, n) for a probabilistic one to align with standard notation.
+>
+We've changed the notation for the (noiseless) data to \hat c, since this will be the mean of the model normal distribution for the observed (noisy) data c.
+
+> 10. Section 1: The notation b_k(z) suggests a deterministic function of redshift
+> z. Providing its functional form, perhaps in an appendix, would enhance clarity,
+> given its relevance to prior construction.
+>
+
+b_k is indeed a deterministic function.  We now have a clause giving an example of what these redshift "kernels" could be (line 41).
+
+> 11. Section 1: The manuscript could explore alternative Bayesian approaches,
+> such as sampling the full posterior p(q, n|c) using a Gibbs-type algorithm or
+> Hamiltonian Monte Carlo, leveraging the linearity and Gaussian
+> assumptions. Additionally, since p(n) is unavailable, using an estimated density
+> p_hat(n) might be viable. For the Gaussian case, analytically marginalizing n to
+> obtain p(c|q) seems feasible, as it involves computing <n> and C_n from the
+> samples of n (e.g., 3000 samples of n in the example). Could the authors discuss
+> why this analytic approach is not pursued, particularly for Gaussian priors, and
+> clarify the role of continuity in p(u) if n is marginalized in such an analytic
+> manner?
+>
+
+As the paper now more clearly states, we are considering a case where an evaluable p(n) is not available. So analytic marginalization is not going to be an option.  And as is stated now near lines 33, a density estimator over the full n space is often infeasible, so this is the case we are trying to address - constructing a viable density estimator, but on a space of reduced dimension.  HMC is an example of an algorithm that requires an evaluable p(n) (and a differentiable one, in addition), and likewise Gibbs sampling requires some kind of sampling method over subsets of the full parameter space, leaving us back where we started, needing to sample from p(n).  So we feel that our statement that p(n) is not evaluable, and most MC methods will require an evaluable p(n), is already excluding the alternative methods that the referee suggests we discuss.
+
+
+> 12. Section 1: The term "MC chain" may be redundant if MC stands for Markov
+> Chain. Consider using "Markov Chain" or "MC" consistently.
+>
+
+I'm embarrassed to have used "MC chain" because I constantly tell other people that it's redundant :)
+These cases have been fixed.
+
+> 13. Section 1: To ensure the validity of the Gaussian prior in Step 2, could the
+> authors confirm that the n samples are independent of the data used for the
+> summary statistic c?
+>
+
+This is now made explicit in the opening paragraph.
+
+> 14. Section 1: The term n_alpha is unclear. Is alpha an index or a marker for
+> compressed/decompressed samples? Later, alpha appears as a summation index in
+> Equation (3). Clarifying its usage would help.
+>
+
+We have now moved into Section 1, near line 51, the exposition that \alpha is an index over the given samples of the n vector.
+The mean is hence over all of the samples of the nuisance parameters, and this is its meaning in the summations as well.
+
+> 15. Section 1: The statement that the method maintains "equal prior probability
+> of each n sample" is unclear. Could the authors explain whether this means
+> preserving the prior distribution post-compression-decompression?
+>
+Line 54 now has "gives each sample $\vecn_\alpha$ equal probability under
+  $p(\vecu),$ maintaining the meaning of the input samples"
+which we hope is clear.
+  
+> 16. Section 1: The claim that the likelihood function is discontinuous is
+> introduced late. Could the authors specify which parameters cause this
+> discontinuity and provide details, perhaps in an appendix, when introducing the
+> likelihood function?
+
+The text is we hope now clearer, that the discontinuity arises in the mapping from the u coordinates of the hypercube into the n values that have been placed into the grid embedded in the hypercube.  The nearest-neighbor assignment is discontinuous (Line 54).
+
+> 
+> 17. Section 1: The assertion that marginalizing n equates to adding terms to Cc
+> is not immediately clear. This seems to hold only if the coefficient of n in
+> c_hat(q, n) is 1. Providing the functional form of this linear function would
+> clarify this.
+>
+
+To keep our paper succinct, we prefer not to give the derivation of a method that we will not be using.  The text now just says that this equivalence is shown by the cited authors.
+
+> 18. Section 1: The claim that the method is a good approximation when conditions
+> are not grossly violated requires justification. Could the authors provide
+> reasoning or references to support this?
+>
+We have removed that clause.  There is a sentence near the end of section 2 that explains a bit more, namely that the compression scheme we develop will still be valid if 1 & 3 are violated but the compression still retains nearly all the cosmologically relevant information in n (Line 175)
+
+> 19. Section 1: Specifying the typical dimensionality of n in practice (e.g.,
+> before the numerical example's 800 dimensions) would provide valuable context.
+
+The dimensionality of the example application is now mentioned at the end of Section 1 (Line 78).
+
+> 
+> 20. Section 1: In Step 3, the linearization of c_hat around fiducial values q0,
+> n0 is unclear. Could the authors provide mathematical details, perhaps in an
+> appendix, and explain why derivatives are independent of q? Background
+> supporting the claimed accuracy relative to measurement errors would also help.
+>
+
+This list is of restrictions, so the linearization is a requirement, not something that is derived. 
+
+> 21. Section 1: The Gaussian assumption for data and priors may not always
+> hold. Could the authors discuss the robustness of this assumption, perhaps
+> considering Student's t distributions for data with outliers? Additionally,
+> clarifying the scientific benefit of accommodating non-Gaussian priors on n with
+> a numerical example would strengthen the case.
+>
+
+The Gaussian assumption for the likelihood (condition 1) is essential the derivation, and we consider it beyond the scope of this paper to address other possible likelihood functions.  The Gaussian assumption for p(n) (condition 2) is one that we do not need to make for our method.
+
+
+> 22. Section 2: The mean adjustment of n vectors by n0 = ⟨nα⟩ seems to precede
+> the availability of n_alpha, which results from decompression. Could the authors
+> clarify this sequence?
+>
+
+We hope the text is now clearer that n_\alpha are the input to our process, but we are going to subtract their collective mean before the subsequent algebraic manipulations (Line 82).
+
+> 23. Section 2: Minimizing the Gaussian mean shift in c does not clearly ensure
+> minimal impact on the posterior distribution. Could the authors explain how this
+> guarantees accurate posterior inference or whether the posterior remains
+> unaffected if the mean shift is zero?
+
+Do we understand correctly that  the referee is asking why the minimization of the quantity in Eqn 3 is achieving the stated goal of finding the best compression?  The sentences following this equation indicate that minimization of this quantity is indeed equivalent to the best possible reproduction of the likelihood only in a special case.  So there is no formal proof (that we have found) that our procedure is generally optimal.  We have added text at line 93 that, we hope, makes it clear that the <chi^2> quantity is a useful proxy to minimize, since attaining zero value would imply that "no probabilities have been harmed" by the compression.
+
+> 
+> 24. Section 2: The notation n and n_alpha is confusing, as n_alpha is described
+> as a decompression result yet undergoes further compression-decompression
+> (n_alpha -> u_alpha -> n_hat_alpha). Could the authors clarify or correct this?
+>
+
+We hope this is clearer after having stated explicitly that alpha is an index into the input samples of n.  Then the n_alpha -> u_alpha -> n_hat_alpha notation indicates that each individual sample is compressed and then decompressed.
+
+> 25. Section 2: The choice of dimension M for u relative to N lacks rigor. Could
+> the authors provide a mathematical justification for selecting M, perhaps
+> comparing to PCA's elbow rule?
+>
+
+The choice of M is indeed not rigorous, it's a heuristic like the "elbow rule."  But unlike generic PCAs, the chi^2 values do have an absolute scale attached since they are logs of probabilities.  New text in step 3 of the procedure gives a bit more incentive for the (crude) cutoff criterion as being related to small errors in the posterior values that our algorithm is helping to calculate (Line 162)
+
+> 26. Section 2: The goal of minimizing cosmological inference errors is noted,
+> but the optimization minimizes mean shifts in the likelihood, not the
+> posterior. Could the authors justify this or consider optimizing the posterior
+> distribution distance?
+>
+
+This distinction is indeed correct, but we do not have a solution for formally optimizing the errors in posterior values or any kind of metric for the distribution.  As we do note (Line 91ff), the optimization criterion for the compression scheme is not really optimizing any formal quantity on the posterior.  We now include the cruder statement that, in essence, getting the likelihood correct to <1% means that one also has the posterior correct to this level (since the latter is an integral over the former times a non-negative prior).
+
+> 27. Section 2: The covariance matrix C_c is described as given. Could the
+> authors clarify how it is defined or computed?
+>
+
+It has the standard meaning of covariance of experimental realizations of c at fixed values of q,n.  It is in the definition of the first required condition in Section 1.  Our algorithm is independent of how it has been obtained, whether through analytic calculations, jackknifing of the data, or some combination, so we opted to not enumerate the possibilities.
+
+> 28. Summary Steps (Pages 4-5): The steps appear informal. Presenting them in an
+> algorithmic format, specifying inputs and iteration details for sampling q and
+> u, would enhance reproducibility.
+>
+
+We hope that narrative statements are clear for this description, since each step cites the equation(s) to be used to execute the step, making them formally well defined.  The except is step 6 - constructing a density estimator in the compressed space - where the user could choose any of the many available methods.
+
+> 29. Section 3: The phrase "posterior distribution of the n(z) distribution" is
+> unclear. Could the authors provide a mathematical definition?
+
+New text at line 190:  generate samples from the posterior
+distribution of  $n(z)$ functions applicable to the bin members, conditioned
+on the photometric and clustering data, \ie\ the $p(n)$ that will become the
+  prior for the inference of \vecq.
+
+> 
+> 30. Section 3: The term "detectable levels" in altering c_hat(n) is vague. Could
+> the authors specify what levels are meant?
+
+New text at line 201: "levels comparable to the
+  precision of the observations."
+
+> 
+> 31. Section 3: The legend in the right panel of Figure 2 appears
+> incomplete. Could this be corrected?
+>
+
+There are only two cases shown in this corner plot, the first described by the orange-y lines and shading, the second by the blue lines and contours.
+
+> 32. Section 3: Comparing the proposed method with existing approaches (e.g.,
+> Cordero et al., Bridle et al., Hadzhiyska et al.) would strengthen the
+> manuscript. A numerical example highlighting the method's advantages over
+> competitors could demonstrate its value. Additionally, the single example may
+> not convince readers of general applicability. Could the authors provide
+> evidence of robustness across datasets?
+>
+
+We have noted in the introduction that the Cordero et al method was not able to produce any usable results for the example problem.  We agree that the paper would be stronger with direct comparison to the Bridle method; however the effort to do so would be very large, because the process of producing cosmological constraints is very long and involved -  there will be *many* pages of journal articles forthcoming soon about this. Reproducing this process with alternative methods is an unaffordable effort.  We do now refer the readers to the papers (in prep) where this method is used extensively, with some measures of how the compression process has (not) altered inferences.
+
+
+> 33. Section 3: Fully specifying the target posterior f(q, n|c or D)
+> mathematically, perhaps in an appendix, would aid reproducibility.
+
+If the referee is referring to describing the posterior for the cosmological parameters in the DES analyses: this is also quite involved, too much so to fit into an Appendix.  A (long) paper in preparation describes the analytical and numerical model for the c quantities in the DES Y6 analyses - see https://arxiv.org/abs/2105.13548 for the modeling of the 3-year data if interested.
+
+> 
+> 34. Section 3: The threshold "chisq < 0.025" seems arbitrary. Could the authors
+> define accuracy in units comparable to measurement error to justify this choice,
+> as the chisq quantity is unitless?
+>
+
+The chisq values are already in units of statistical significance, i.e. scaled by the measurement errors as embodied in C_c.  We added a few words at line 215 describing our motivation - to keep the total impact of compressing 10 modes to be well below the 1-sigma uncertainties inherent to the data.  There is not a precise motivation.
+
+> 35. Section 3: The CDF normalization procedure's impact on preserving the target
+> distribution is unclear. Could the authors provide references or proofs
+> supporting its validity?
+>
+
+The implicit function using CDFs in Eqn. 23 is the standard variable-transformation method for sampling an arbitrary 1d probability distribution, so we hope it does not require a proof here.   As to what they do, we refer to the paragraph starting at line 222, which notes that the histogram for, in particular, the u1  histogram in Figure 3, is by eyeball inspection definitely non-Gaussian.  So to sample from p(u) [and therefore sample from p(n)] we need to be able to sample from this histogram.  Hence the use of the variable-transformation to convert a non-Gaussian distribution into a Gaussian one.  
+
+> 36. Section 3: Using a chi-square measure for Bayesian inference is
+> unconventional. Consider incorporating Bayesian model checking, such as
+> posterior predictive checks.
+>
+
+True, Bayesians don't like to use chi^2 as a goodness-of-fit measure.  But in this case we're not really doing that.  We are instead using this to ask if the compression scheme has successfully reproduced the parts of the n(z) distribution of the samples that are actually relevant to predicting the c values.  If it has been successful, then the green and orange histograms (input samples vs samples from our generative model) will match.  So we think the plot is informative of the goal.
+
+> 37. Figure 1: The input and generated samples align only near redshift
+> 0.88. Could the authors explain this discrepancy at other redshifts?
+>
+
+Is the referee referring to the fact that the blue violins are shorter than the orange ones? The means of the two distributions (centers of the violins) are, by construction, identical.  The blue, compression-derived distributions are shorter (narrower distributions) than the orange input distributions, which is a result of projecting away modes of n that have no influence on the observable c values.  Removing modes can only reduce the variance of n(z) at a particular z, so the blue violins are shorter than the orange ones, by varying degrees at different values of z.
+
+> 38. General: The method aims to sample q, but evidence of improved q sampling is
+> limited. Could the authors provide empirical results demonstrating enhanced q
+> sampling or discuss the scientific impact of improved n sampling? A numerical
+> example showing how the method affects scientific conclusions compared to
+> existing approaches would be valuable.
+>
+
+Our application is complex enough that it is difficult to come up with a single bottom-line measurement that says that our compression scheme is better than some other alternative for running a Markov chain over an 80-dimensional vector.  As noted in the introduction, it is simply not feasible to build a density estimator directly in the 80d space, nor to concatenate MC's that fix n to each sampled values, nor to use the hypercube discrete mapping - so no comparison of sampling results is even possible. We do demonstrate in Figure 4 that the ad-hoc resampling scheme for n(z) used in previous DES analyses (Eqn 27) does fail in at least one respect to reproduce the effect of the true n(z) samples on the cosmological observables, while the mode-projection method succeeds.  The difference is, admittedly, not dramatic, but at least we now have a method that is principled and fast.
+
+We have inserted text into the concluding section to reiterate these points.
+
+> I hope these suggestions are helpful in refining the manuscript. The proposed
+> method has potential, and addressing these points could enhance its clarity and
+> impact.
+>
+
+Thank you!

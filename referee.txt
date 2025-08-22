@@ -1,0 +1,81 @@
+Reviewer Report - received 17 July 2025
+Reviewer:
+The authors present an intriguing linear compression and decompression technique for Bayesian inference when the prior distribution of nuisance parameters is available only through samples from prior research. The mathematical concepts are engaging, and the method is illustrated with a numerical example. However, I have some suggestions to enhance clarity, rigor, and comparability with existing methods. Below, I outline my comments to support the authors in refining their work.
+
+1. Title: The phrase "Sampling Bayesian probabilities" may be unclear. Probability, as a mapping from an event to a value between 0 and 1, is consistent across Bayesian and frequentist frameworks. Could the authors clarify what is meant by "Bayesian probabilities" in the main text and consider a title that more precisely reflects the manuscript's focus? For example, if the intent is to generate samples from a posterior distribution, a phrase like "sampling from a probability distribution" might be more standard. A revised title could better capture the core contribution.
+
+2. Abstract: The assumption that the joint prior p(q, n) factorizes as p(q)p(n) holds only when q and n are independent. As the abstract discusses Bayesian inference generally, it may be helpful to clarify this assumption or use a more general expression for the joint prior.
+
+3. Abstract: The claim that the issue of a prior p(n) defined only by samples is common may benefit from adjustment. If this is a specific case, replacing "many" with "some" could enhance clarity. If the authors believe this issue is widespread, citing Bayesian textbooks or references addressing this scenario would strengthen the claim. Additionally, to ensure adherence to Bayesian principles, could the authors confirm that the data used in this study are distinct from those used to construct the prior samples, avoiding potential reuse of data?
+
+4. Abstract and Section 1: The likelihood function, as defined by R. A. Fisher, is typically a function of model parameters given the data, denoted as L(q, n|D) or L(q, n). The current notation L(D | q, n) as a function of data given parameters may cause confusion. If the authors intend to use f(D|q, n) to represent the probability density of the data given parameters, explicitly defining it as L(q, n) = f(D|q, n) could clarify this. A reference to standard definitions, such as those on Wikipedia, might help.
+
+5. Section 1: The term "Bayesian posterior probability" before Equation (1) might be more accurately described as the "Bayesian posterior density," as Equation (1) represents a density, not a probability.
+
+6. Section 1: The statement that the prior p(n) is known only through samples could be clarified. If the authors assume these samples are drawn from an unknown prior p(n), revising the sentence to avoid implying knowledge of p(n) might reduce confusion. For example, stating that the samples are assumed to represent p(n) could be clearer.
+
+7. Section 1: The manuscript notes that insufficient samples for high-dimensional n may hinder density estimation but does not appear to address this issue. Could the authors clarify their proposed solution for cases with limited samples, or confirm if this remains a challenge under the compression-decompression approach?
+
+8. Section 1: The discussion of running a new Markov Chain (MC) for each sample of n to marginalize over n is described as infeasible for a large number of samples. Could the authors elaborate on why this is infeasible and whether a smaller number of samples would make it feasible? Additionally, specifying what constitutes a "large" or "small" number of samples (e.g., 100 or 1000 vectors) would provide useful context, especially given the numerical example.
+
+9. Section 1: The notation c_hat for the model is unconventional, as a hat typically denotes an estimator. Consider using c = g(q, n) for a deterministic model or g(c|q, n) for a probabilistic one to align with standard notation.
+
+10. Section 1: The notation b_k(z) suggests a deterministic function of redshift z. Providing its functional form, perhaps in an appendix, would enhance clarity, given its relevance to prior construction.
+
+11. Section 1: The manuscript could explore alternative Bayesian approaches, such as sampling the full posterior p(q, n|c) using a Gibbs-type algorithm or Hamiltonian Monte Carlo, leveraging the linearity and Gaussian assumptions. Additionally, since p(n) is unavailable, using an estimated density p_hat(n) might be viable. For the Gaussian case, analytically marginalizing n to obtain p(c|q) seems feasible, as it involves computing <n> and C_n from the samples of n (e.g., 3000 samples of n in the example). Could the authors discuss why this analytic approach is not pursued, particularly for Gaussian priors, and clarify the role of continuity in p(u) if n is marginalized in such an analytic manner?
+
+12. Section 1: The term "MC chain" may be redundant if MC stands for Markov Chain. Consider using "Markov Chain" or "MC" consistently.
+
+13. Section 1: To ensure the validity of the Gaussian prior in Step 2, could the authors confirm that the n samples are independent of the data used for the summary statistic c?
+
+14. Section 1: The term n_alpha is unclear. Is alpha an index or a marker for compressed/decompressed samples? Later, alpha appears as a summation index in Equation (3). Clarifying its usage would help.
+
+15. Section 1: The statement that the method maintains "equal prior probability of each n sample" is unclear. Could the authors explain whether this means preserving the prior distribution post-compression-decompression?
+
+16. Section 1: The claim that the likelihood function is discontinuous is introduced late. Could the authors specify which parameters cause this discontinuity and provide details, perhaps in an appendix, when introducing the likelihood function?
+
+17. Section 1: The assertion that marginalizing n equates to adding terms to Cc is not immediately clear. This seems to hold only if the coefficient of n in c_hat(q, n) is 1. Providing the functional form of this linear function would clarify this.
+
+18. Section 1: The claim that the method is a good approximation when conditions are not grossly violated requires justification. Could the authors provide reasoning or references to support this?
+
+19. Section 1: Specifying the typical dimensionality of n in practice (e.g., before the numerical example's 800 dimensions) would provide valuable context.
+
+20. Section 1: In Step 3, the linearization of c_hat around fiducial values q0, n0 is unclear. Could the authors provide mathematical details, perhaps in an appendix, and explain why derivatives are independent of q? Background supporting the claimed accuracy relative to measurement errors would also help.
+
+21. Section 1: The Gaussian assumption for data and priors may not always hold. Could the authors discuss the robustness of this assumption, perhaps considering Student's t distributions for data with outliers? Additionally, clarifying the scientific benefit of accommodating non-Gaussian priors on n with a numerical example would strengthen the case.
+
+22. Section 2: The mean adjustment of n vectors by n0 = ⟨nα⟩ seems to precede the availability of n_alpha, which results from decompression. Could the authors clarify this sequence?
+
+23. Section 2: Minimizing the Gaussian mean shift in c does not clearly ensure minimal impact on the posterior distribution. Could the authors explain how this guarantees accurate posterior inference or whether the posterior remains unaffected if the mean shift is zero?
+
+24. Section 2: The notation n and n_alpha is confusing, as n_alpha is described as a decompression result yet undergoes further compression-decompression (n_alpha -> u_alpha -> n_hat_alpha). Could the authors clarify or correct this?
+
+25. Section 2: The choice of dimension M for u relative to N lacks rigor. Could the authors provide a mathematical justification for selecting M, perhaps comparing to PCA's elbow rule?
+
+26. Section 2: The goal of minimizing cosmological inference errors is noted, but the optimization minimizes mean shifts in the likelihood, not the posterior. Could the authors justify this or consider optimizing the posterior distribution distance?
+
+27. Section 2: The covariance matrix C_c is described as given. Could the authors clarify how it is defined or computed?
+
+28. Summary Steps (Pages 4-5): The steps appear informal. Presenting them in an algorithmic format, specifying inputs and iteration details for sampling q and u, would enhance reproducibility.
+
+29. Section 3: The phrase "posterior distribution of the n(z) distribution" is unclear. Could the authors provide a mathematical definition?
+
+30. Section 3: The term "detectable levels" in altering c_hat(n) is vague. Could the authors specify what levels are meant?
+
+31. Section 3: The legend in the right panel of Figure 2 appears incomplete. Could this be corrected?
+
+32. Section 3: Comparing the proposed method with existing approaches (e.g., Cordero et al., Bridle et al., Hadzhiyska et al.) would strengthen the manuscript. A numerical example highlighting the method's advantages over competitors could demonstrate its value. Additionally, the single example may not convince readers of general applicability. Could the authors provide evidence of robustness across datasets?
+
+33. Section 3: Fully specifying the target posterior f(q, n|c or D) mathematically, perhaps in an appendix, would aid reproducibility.
+
+34. Section 3: The threshold "chisq < 0.025" seems arbitrary. Could the authors define accuracy in units comparable to measurement error to justify this choice, as the chisq quantity is unitless?
+
+35. Section 3: The CDF normalization procedure's impact on preserving the target distribution is unclear. Could the authors provide references or proofs supporting its validity?
+
+36. Section 3: Using a chi-square measure for Bayesian inference is unconventional. Consider incorporating Bayesian model checking, such as posterior predictive checks.
+
+37. Figure 1: The input and generated samples align only near redshift 0.88. Could the authors explain this discrepancy at other redshifts?
+
+38. General: The method aims to sample q, but evidence of improved q sampling is limited. Could the authors provide empirical results demonstrating enhanced q sampling or discuss the scientific impact of improved n sampling? A numerical example showing how the method affects scientific conclusions compared to existing approaches would be valuable.
+
+I hope these suggestions are helpful in refining the manuscript. The proposed method has potential, and addressing these points could enhance its clarity and impact.
