@@ -1,0 +1,442 @@
+We thank the referee for their additional insights and advice.  A very busy fall
+semester has delayed our response, but the fringe benfit of this delay is that
+the three papers that apply this method at full scale to data are now available
+on arXiv (Yin et al, d'Assignies et al, Giannini et al).
+
+
+> Reviewer Report: Thank you very much for taking the time to respond carefully to
+> all my questions. The manuscript has improved considerably, although there is
+> still room for further development. I also noticed that while the authors
+> provided detailed answers to some of my questions in their response, these
+> explanations were not included in the main text. Incorporating such details into
+> the manuscript would, in my view, substantially improve its quality, as not all
+> readers will share the same level of background knowledge as the authors. If my
+> comments end with a question mark, please interpret them as "discuss and provide
+> more details in the manuscript." I hope to see in the main text the same level
+> of detail that the authors provided in their response.
+>
+
+We appreciate the comment, and hope the referee agrees that optimizing
+a paper for its readers involves some tradeoff between showing more steps and
+details/background vs creating a concise paper without too many digressions.  We
+typically offer more details in the referee-response document then we put into
+the paper, hoping the latter are sufficient to have future readers avoid the
+problems that the referee initially identified.   We will take the 2nd report as
+indicating areas where this was not accomplished, but we do not wish to
+incorporate the full text of the response document into the paper.
+
+Before addressing the referee's individual comments, we note that we have
+significantly rewritten a portion of Section 2 to address two concerns that we
+believe underlie several of the referee's comments.   One is whether
+a small value of the compression loss expressed by the <chi^2> quantity [given in
+what is now eqn (7)] is equivalent to small biases in the inference of the
+parameters q.  The other is whether the summation over samples in this equation
+is a reliable representation of a full marginalization over some underlying
+true prior in the nuisance space n.  The revised text attempts to:
+
+(1) more clearly define the relation between the chi^2 metric and changes in the
+parameter inference;
+
+(2) explicitly note that we do not offer formal proofs for these two concerns;
+
+(3) qualitatively explain why these two statements are strongly motivated
+despite the absence of a proof.
+
+> ========================= New comments:
+> 
+> 1. Overall, I find the article difficult to accept in one important aspect of
+> dimension reduction. My understanding is that dimension reduction generally
+> comes with some loss of information, and this loss typically increases as the
+> reduced dimensionality moves further from the original. In other words, there is
+> no "free lunch." From the authors' response regarding the elbow rule, it is
+> clear that they are aware of the information loss inherent in dimension
+> reduction. However, the manuscript suggests that marginalizing a set of
+> high-dimensional nuisance parameters in a reduced space of u will barely change
+> the posterior distribution of the quantity of interest q. Could the authors
+> please provide a rigorous explanation of why reducing from 80 to 3 dimensions
+> results in almost no information loss about q? Are q and n nearly independent a
+> posteriori? Any evidence? This does not necessarily need to be included in the
+> main text, but at least in the appendix. I believe this is the most critical
+> demonstration needed for the proposed method, yet there is currently no
+> discussion about the loss of information in q with respect to n.
+>
+
+The new text in Section 2 elaborates that the quantity
+now in eqn (7) is in fact our compression loss,
+and that values <<1 can be considered to "barely change the posterior
+distribution of the quantity of interest q" (to use the referee's phrase) since
+they are changing assigned likelihoods by amounts well below the observational
+noise, the latter being O(1) in log(probability).
+
+> 2. At this stage, the revised manuscript still contains several arguments that
+> remain unproven (detailed below). In my previous review, I requested certain
+> proofs, but these were not included in either the revision or the response. It
+> is possible that I am overlooking points the authors consider trivial, but I
+> would greatly appreciate seeing the proofs or derivations, as I find it
+> uncomfortable to read unproven arguments in a scientific article. If the authors
+> are concerned that including them in the main text might interrupt the flow,
+> they could instead be placed in an appendix.
+> 
+> 3. Line 47: The manuscript states, "demonstrate the method with a single galaxy
+> sample's n(z)." Since the proposed method is developed for the general case of
+> multiple galaxy samples (e.g., N = 10), the empirical example using only the
+> simplest single-sample case seems insufficient. In this sense, the manuscript
+> feels incomplete. Including an additional example (e.g., s = 1, 2) would better
+> illustrate the general applicability of the proposed method.
+>
+
+We differ in opinion: we feel that one fully worked example of the method is
+sufficient for this paper explaining the method, and in fact a higher-dimensional
+example would make it more difficult to visualize the nature of the modes and
+other quantities in the text.  Perhaps it also helps at this point that the
+full-scale applications to the DES data are available on arXiv (and being refereed).
+
+
+> 4. Line 52: The notation "alpha in 1...N_alpha" is not mathematically valid. It
+> seems as if alpha is defined as an element of a set indexed by itself, which
+> does not make sense. Perhaps the authors meant alpha in {1,...,N}. If not,
+> please clarify what "alpha in N_alpha" is intended to mean.
+>
+
+Yes, this is confusing.  We have changed N_alpha to N_samp throughout the paper.
+
+> 5. Line 54: The phrase, "the decompression function n^hat(u) outputs the n_alpha
+> sample at the nearest grid point to u," is somewhat confusing. In the previous
+> sentence, n_alpha was introduced as one of the N inputs to the compressor. How,
+> then, can the decompression function output the input again intact? Does this
+> mean that the decompression function selects and outputs one of the N inputs
+> (e.g., some n_alpha) nearest to u? Please clarify.
+>
+
+Extra text now pointing out that we are trying to describe nearest-neighbor
+interpolation of any input value of u to the finite set of samples placed within
+the u space.
+
+> 6. Line 79: The red-highlighted sentence does not appear in the appropriate
+> place. I suggest moving it between the two sentences on line 54, i.e., after
+> "... at the nearest grid point to u." and before "This solves...", if the
+> authors agree.
+>
+
+We have done this (with some further editing to match the new location better).
+
+> 7. Line 92: The authors write, "If the data are in fact drawn ... from the
+> compression." This argument requires a mathematically rigorous proof. I do not
+> expect this proof in the main text, but at least in the supplementary
+> material. In particular, I would like to see how Eqn (3) is derived as a mean
+> shift only if the data are drawn from the Gaussian likelihood. As written, Eqn
+> (3) appears to be an arbitrary chi-square quantity comparing two means under the
+> same metric. How exactly does this follow from the likelihood function, which
+> involves c^bar(q, n) but not c^bar(q, n^hat)? Is Eqn (3) derived by subtracting
+> the likelihood with c^bar(q, n^hat) from the one with c^bar(q, n)?
+>
+
+The revised text in section 2 now shows the relation of
+the quantity (now in eqn 7) to the shift in inferred likelihood.  We emphasize
+that this is a useful loss function even if it cannot be translated directly
+into an error in inference on q.
+
+> 8. Line 94: The statement in red requires justification. Even if <chi-square> =
+> 0, the substitution can still affect the posterior because the equality holds
+> only for a finite set of N n_alpha samples. The posterior remains unchanged in
+> the limit where <chi-square> -> 0 "and" N -> infinity, i.e., when no n_alpha
+> samples exist that the linear subspace cannot explain. Please clarify the
+> conditions under which the substitution leaves the posterior unchanged. I would
+> also encourage the authors to demonstrate this argument explicitly, rather than
+> relying on a verbal explanation prompted by my comment.
+>
+
+The new text addresses this, and is explicit that we have a strong motivation to
+believe that we are in the desired limits but not a formal proof.
+
+> 9. Line 98: The notation c^hat appears here for the first time but has not been
+> defined. Does c^bar represent c, where n is replaced with n^hat? Please provide
+> a definition.
+>
+
+Typographical error, these have been fixed to be \bar c.
+
+> 10. Line 99: Please include a discussion of how realistic the condition in Eqn
+> (4) is in the scientific context of the example. Since this is one of the key
+> conditions of the method, it should be discussed explicitly.
+>
+
+We would consider it the responsibility of the user of the compression scheme to
+validate this condition, not something that we can prove during the derivation
+of the generic compression.  As for its applicability in our example case, we
+have added text in Section 3 noting that the agreement between the chi-squared
+distributions of the uncompressed vs compressed n vectors helps confirm that the
+linearization approximation was sufficient to build a good compressor.
+
+
+> 11. Lines 104-105: The statement, "This quantity is also the Fisher matrix..."
+> is unproven. Could the authors show rigorously how Eqn (6) corresponds to the
+> Fisher information matrix? For example, is Fisher information defined here as
+> the negative expectation of the Hessian? The Fisher matrix F must be a function
+> of q and n, but I do not think the current definition of F is a function of q
+> and n as these values are fixed at q_0 and n_0, making F appear to be a constant
+> matrix.
+>
+
+The Fisher matrix for a multivariate normal observable with fixed covariance
+matrix  is very commonly used in cosmology, so we have provided a citation to
+one of its earlier uses rather than re-deriving the form.
+
+> 12. Line 207: What does theta represent? It has not been defined previously. If
+> the observables c depend on w(theta) and gamma_t^{(s)}(theta), then are these
+> included in c^bar(n, q)? In that case, if theta contains n, the linearization of
+> c^bar in n must carry the implicit assumption that n is also linearizable in w
+> and gamma_t. How realistic is the assumption that n is linearizable within
+> c^bar? Please provide a discussion about it.
+>
+
+Theta is now defined as the angular separation value for the correlation
+functions.  As the text now hopefully makes clearer, w and gamma^t *are* the elements of the
+observable vector c.  The theta values are not functions of anything, they just
+index bins of angular separation.
+
+> 13. Line 249: The authors write, "the chi-square distribution for the input
+> samples." This phrasing can be interpreted in two different ways: (1) a literal
+> chi-square distribution with some degrees of freedom, or (2) the distribution of
+> the chi-square quantity for the input samples. Since Figure 4 does not resemble
+> a chi-square distribution, I assume the authors meant (2). Please clarify. In
+> addition, please discuss why the chi-square quantity defined by the authors does
+> not follow a chi-square distribution with some degrees of freedom.
+>
+
+The text now clarifies that we are plotting the distribution of the statistic
+defined in what is now eqn (30).  A footnote explains that the systematic errors
+whose effect chi^2 quantifies have no reason to match "the" chi^2 distribution.
+
+> 14. Line 278: The authors state, "as long as the statistically relevant ..."
+> This condition seems optimistic. It is important to consider how likely the
+> "ideal situation" is, rather than assuming it. If the authors plan to adopt
+> non-linear models such as deep neural networks to explore the non-linearity of n
+> in future work, I suggest adding a sentence about this direction. For example:
+> "This work does not account for the case where significant n samples arise
+> beyond the linear subspace in a non-negligible quantity, but we leave this as
+> future research."
+
+New text at the end of Sec 2, and in the conclusion, 
+tries to clarify the intent of this statement.  We are not trying to argue
+for any extensions to non-linear compression, rather to point out that linear
+compression defines a reduction to a subspace of n.  Once this subspace is
+defined, proper marginalization *over this subspace* does not require linearity
+of the model nor gaussianity of the likelihood.
+
+> 
+> 15. Line 286: The manuscript describes some past analyses as "ad-hoc," but the
+> proposed method itself appears to involve ad-hoc elements, such as minimizing
+> chi-square while assuming it does not significantly affect the posterior, as
+> well as some arbitrary threshold for the chi-square quantity. I suggest avoiding
+> this terminology.
+
+The previous approaches chose a prior distribution for their n(z) functions -
+what is now eqn (31) - as an intuitive guess of what variation should be
+allowed.  We do offer a method to minimize a loss as a function of
+compressed dimension M.  The loss function has an interpretable scale,
+since it is close to log(probability), to allow informed choices in the loss vs
+compression tradeoff.  The loss function is not defined by parameter inferences
+directly, but we do consider this a strongly motivated method rather than ad hoc.
+
+
+> 
+> ====================================== Comments on the authors' responses:
+> 
+> 16. Response to item 4: There seems to be a misunderstanding. My comment
+> referred to the notation of the likelihood function, while the authors' response
+> addressed the posterior density. By definition (see Fisher, 1922), the
+> likelihood function is a function of the parameters given the data, not a
+> function of the data itself (as specified by the authors). This definition has
+> remained unchanged. For example, it should be written as L(q, n | D) in the
+> abstract and L(q, n | c) in the introduction. Since the authors adopt a Bayesian
+> framework, I recommend consulting at least a standard reference such as Bayesian
+> Data Analysis (Gelman et al., 2013).
+> 
+> 17. Response to item 5: I encourage the authors to revisit the distinction
+> between a density function and probability. While Wikipedia can serve as a quick
+> reference, it should not be the primary reference in a scientific
+> paper. Standard textbooks provide more rigorous definitions.
+>
+
+I am at a loss for a response here - perhaps this is because the referee and I
+are from different research communities with different lingo.  The use of
+"likelihood" to describe a conditional probability p(y | theta) - where y are
+observations and theta are parameters - is standard in astronomical
+literature.  Also, quoting from Gelman's book, sec 1.3:
+
+"Using Bayes’ rule with a chosen probability model means that the data y affect the posterior
+inference (1.2) only through p(y|theta), which, when regarded as a function of theta, for fixed y, is
+called the likelihood function."
+
+
+> 18. Response to item 7: I remain curious: if the dimension is reduced from 80 to
+> 3, how much information is lost? Does the 3-dimensional density estimator
+> correctly represent the original 80-dimensional density after decoding? This
+> relates back to my first comment in this review.
+>
+
+It is unclear to us what the referee is requesting that is not presented in
+Figures 2 and 4, which give the deviations in log(L) between evaluations using
+compressed vs uncompressed n vectors.  These show that the compression loss in
+the n vectors is very small in the sense of any observable consequence of the
+difference.  Are you asking for comparison of the resultant constraints on
+cosmological parameters after marginalizing over compressed vs uncompressed n
+distributions?  It is unfortunately not feasible to conduct the cosmological
+parameter marginalization over the full uncompressed space.  We are making use
+of our (admittedly not formally proven) assertion that reproducing log(L) to
+accuracy <<1 will yield insignificantly different posteriors on q.
+
+
+> 19. Response to item 17: I am not sure how much space would be required to
+> specify the functional form of c_hat(q, n), but since the authors consider this
+> assumption important, could they provide some discussion on how realistic it is
+> to assume that this function can be linearized in n?
+>
+
+The model c_hat is indeed complex, and derivatives are taken numerically.  We
+do not have explicit validation of what is now eqn (8) - is this the
+assumption that is referred to here?  As we note now in text after eqn (30), we
+can retroactively validate that the compressed n(z) functions reproduce the
+model c_hat of the uncompressed samples.
+
+> 20. Response to item 18: The authors state in their response, "the compression
+> scheme we develop will still be valid if 1 & 3 are violated but the compression
+> still retains nearly all the cosmologically relevant information in n (Line
+> 175)." This sentence seems to contain two unproven claims: (1) that the
+> compression scheme is valid even if conditions 1 and 3 are violated, and (2)
+> that the compression still retains nearly all relevant information in n. Both
+> points need to be justified more rigorously.
+>
+
+The response document is indeed confusing on this point, and its text is not in the manuscript.
+We hope the new text at the end of Sec 2 and in the conclusion are now better at
+describing what deviations from the three conditions in the intro can be
+correctly handled by the compression method.
+
+> 21. Response to item 20: The new sentence added to Item 3 also introduces
+> another unproven claim: "the multiplicative errors in the likelihood function
+> are at percent levels when the chi-square value is substantially smaller than
+> 1." Since chi-square is computed for a finite set of N n_alpha samples, this may
+> only hold for those samples. However, the posterior distribution could still
+> differ significantly from the true posterior unless <chi-square> -> 0 and N ->
+> infinity. More detail is needed to support this statement.
+>
+> 22. Response to item 23: I agree that minimizing the quantity in Eqn (3) will
+> provide the best optimization solution for a finite set of N n_alpha
+> samples. However, my original question was why this minimization guarantees
+> accurate posterior inferences. I remain unconvinced on this point for the
+> reasons I explained in my earlier comments.
+> 
+
+These are the two issues that we hope the large revision in Section 2 has
+clarified---not in the sense of actually offering a proof, but at least offering
+motivation and being explicit about lack of a proof.  For a real statistics
+paper this might be insufficient, but in the tradition of experimental
+scientists everywhere, we would like to proceed with the method by showing that
+it works in practice without a solid proof of optimality.
+
+
+> 24. Response to item 26: The authors acknowledge that they do not have a formal
+> solution for optimizing posterior errors or providing a metric for the
+> distribution. Would the authors consider identifying a set of unknowns that
+> jointly minimizes the Wasserstein distance between two posterior distributions,
+> rather than minimizing the current chi-square quantity?
+>
+
+This sounds interesting to explore, but we do not have at present any idea of
+how to implement this metric into a more rigorous compression score.
+
+> 25. Response to item 26: The authors state that "getting the likelihood correct
+> to <1% means that one also has the posterior correct to this level." I suggest
+> exercising caution with this argument, as the accuracy of the posterior also
+> depends on how well the n_alpha samples lying on the assumed linear subspace
+> represent the full space.
+>
+
+The new Section 2 text does raise both of these issues, and asserts---again
+without proof---that overtraining on the samples is very unlikely to be a
+problem given the very large number of samples relative to the degrees of
+freedom in the compressed representation.
+
+> 26. Response to item 27: Although the authors decided not to enumerate the
+> possibilities, more details (even in a short footnote) would be very helpful for
+> readers. Such details need not interrupt the flow of the paper but would
+> strengthen clarity.
+>
+
+Some text added at this point given example methods of knowing C_c.
+
+> 27. Response to item 28: I recommend reconsidering the choice not to provide an
+> algorithmic description in a formal table. Such tables are often included to
+> avoid misinterpretation, miscoding, or unintended results, and to ensure
+> reproducibility. While I understand the authors may wish to limit further work
+> on this manuscript, reproducibility has become a key standard for publication in
+> a scientific journal.
+>
+
+We appreciate the suggestion, but believe that the textual listing which refers
+to explicit equations for each step is as good as having a table.  Especially
+since step (6) is specific to each application of the method---we do
+not have a single algorithm required for the density estimation in the
+compressed space.
+
+
+> 28. Response to item 32: The authors ask readers to accept the proposed method
+> without comparison to alternatives. In scientific writing, however,
+> demonstrating either theoretical or empirical advantages is important. A
+> comparison, even a brief one, would significantly strengthen the credibility of
+> the method.
+>
+
+The referee is probably correct that the paper would be more convincing if we
+were to create a case where the advantage of the new method over the two
+alternatives in the literature is clearer.  But we will still prefer not to do
+this, since we already know that the  Cordero et al method
+is not feasibly applied to our example data  (as the paper notes), and
+proceeding to full cosmological posteriors for using the Bridle/Hadzhiyska
+method is a very large undertaking. 
+
+
+> 29. Response to item 33: The authors indicate that defining the function f(q, n
+> | D) might require several pages. Nonetheless, since the posterior is L(q,
+> n)p(q)p(n), it would be valuable to provide as much detail as possible about
+> L(q, n), p(q), and p(n) in the specific context of Section 3. What I
+> particularly wish to understand is the form of f(q, u | D), since the authors
+> marginalize over u. If this is already known to the authors, making it explicit
+> would be very helpful to readers. At present, no details are provided that
+> uniquely determine f(q, n | D) or f(q, u | D).
+>
+
+It is really far beyond the scope of this paper to describe that model, and it
+is unfortunately not going to be reproducible by anyone who isn't already an
+expert in cosmological calculations.  We have provided a few more sentences
+giving a rough idea of the nature of the model, but it is necessary to refer to
+forthcoming papers that will provide the equations.
+
+
+> 30. Response to item 34: The response suggests that statistical significance has
+> "some unit," connected to the chi-square quantity. This is surprising, since the
+> chi-square statistic is generally unitless (with numerator and denominator units
+> canceling). Statistical significance, expressed in terms of 1-sigma, 2-sigma,
+> etc., is defined relative to a reference distribution and is not tied to
+> physical measurement units. Please clarify this point further. Also, the
+> distribution of the chi-square quantity in Eqn (3) has not been specified. While
+> this may not be critical for optimization, the authors could provide more detail
+> with careful consideration.
+>
+
+The <chi^2> quantity defined in what is now eqn (7) does not have any predetermined
+distribution, since it is an integral over the prior on n that is not
+constrained to have any particular form.  We do hope that the new text in
+Section 2 now makes it clear that the <chi^2> quantity is unitless since it is
+derived from compression errors propagating into log(probability).  And also clarifies that the condtion
+that this quantity should be reduced to <<1 is at least qualitatively justified
+by its being log(probability).  
+
+> 31. Response to item 37: Please incorporate the response into the main
+> text. Additional details are always welcome and would help the reader.
+>
+
+Text now added to the paragraph following eqn  (29), where the example
+application reaches the point of generating n values from the compressed distribution.

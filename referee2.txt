@@ -1,0 +1,71 @@
+
+----------------------------------------------------------------------
+Reviewer Report
+Reviewer:
+Thank you very much for taking the time to respond carefully to all my questions. The manuscript has improved considerably, although there is still room for further development. I also noticed that while the authors provided detailed answers to some of my questions in their response, these explanations were not included in the main text. Incorporating such details into the manuscript would, in my view, substantially improve its quality, as not all readers will share the same level of background knowledge as the authors. If my comments end with a question mark, please interpret them as "discuss and provide more details in the manuscript." I hope to see in the main text the same level of detail that the authors provided in their response.
+
+======================================
+New comments:
+
+1. Overall, I find the article difficult to accept in one important aspect of dimension reduction. My understanding is that dimension reduction generally comes with some loss of information, and this loss typically increases as the reduced dimensionality moves further from the original. In other words, there is no "free lunch." From the authors' response regarding the elbow rule, it is clear that they are aware of the information loss inherent in dimension reduction. However, the manuscript suggests that marginalizing a set of high-dimensional nuisance parameters in a reduced space of u will barely change the posterior distribution of the quantity of interest q. Could the authors please provide a rigorous explanation of why reducing from 80 to 3 dimensions results in almost no information loss about q? Are q and n nearly independent a posteriori? Any evidence? This does not necessarily need to be included in the main text, but at least in the appendix. I believe this is the most critical demonstration needed for the proposed method, yet there is currently no discussion about the loss of information in q with respect to n.
+
+2. At this stage, the revised manuscript still contains several arguments that remain unproven (detailed below). In my previous review, I requested certain proofs, but these were not included in either the revision or the response. It is possible that I am overlooking points the authors consider trivial, but I would greatly appreciate seeing the proofs or derivations, as I find it uncomfortable to read unproven arguments in a scientific article. If the authors are concerned that including them in the main text might interrupt the flow, they could instead be placed in an appendix.
+
+3. Line 47: The manuscript states, "demonstrate the method with a single galaxy sample's n(z)." Since the proposed method is developed for the general case of multiple galaxy samples (e.g., N = 10), the empirical example using only the simplest single-sample case seems insufficient. In this sense, the manuscript feels incomplete. Including an additional example (e.g., s = 1, 2) would better illustrate the general applicability of the proposed method.
+
+4. Line 52: The notation "alpha in 1...N_alpha" is not mathematically valid. It seems as if alpha is defined as an element of a set indexed by itself, which does not make sense. Perhaps the authors meant alpha in {1,...,N}. If not, please clarify what "alpha in N_alpha" is intended to mean.
+
+5. Line 54: The phrase, "the decompression function n^hat(u) outputs the n_alpha sample at the nearest grid point to u," is somewhat confusing. In the previous sentence, n_alpha was introduced as one of the N inputs to the compressor. How, then, can the decompression function output the input again intact? Does this mean that the decompression function selects and outputs one of the N inputs (e.g., some n_alpha) nearest to u? Please clarify.
+
+6. Line 79: The red-highlighted sentence does not appear in the appropriate place. I suggest moving it between the two sentences on line 54, i.e., after "... at the nearest grid point to u." and before "This solves...", if the authors agree.
+
+7. Line 92: The authors write, "If the data are in fact drawn ... from the compression." This argument requires a mathematically rigorous proof. I do not expect this proof in the main text, but at least in the supplementary material. In particular, I would like to see how Eqn (3) is derived as a mean shift only if the data are drawn from the Gaussian likelihood. As written, Eqn (3) appears to be an arbitrary chi-square quantity comparing two means under the same metric. How exactly does this follow from the likelihood function, which involves c^bar(q, n) but not c^bar(q, n^hat)? Is Eqn (3) derived by subtracting the likelihood with c^bar(q, n^hat) from the one with c^bar(q, n)?
+
+8. Line 94: The statement in red requires justification. Even if <chi-square> = 0, the substitution can still affect the posterior because the equality holds only for a finite set of N n_alpha samples. The posterior remains unchanged in the limit where <chi-square> -> 0 "and" N -> infinity, i.e., when no n_alpha samples exist that the linear subspace cannot explain. Please clarify the conditions under which the substitution leaves the posterior unchanged. I would also encourage the authors to demonstrate this argument explicitly, rather than relying on a verbal explanation prompted by my comment.
+
+9. Line 98: The notation c^hat appears here for the first time but has not been defined. Does c^bar represent c, where n is replaced with n^hat? Please provide a definition.
+
+10. Line 99: Please include a discussion of how realistic the condition in Eqn (4) is in the scientific context of the example. Since this is one of the key conditions of the method, it should be discussed explicitly.
+
+11. Lines 104-105: The statement, "This quantity is also the Fisher matrix..." is unproven. Could the authors show rigorously how Eqn (6) corresponds to the Fisher information matrix? For example, is Fisher information defined here as the negative expectation of the Hessian? The Fisher matrix F must be a function of q and n, but I do not think the current definition of F is a function of q and n as these values are fixed at q_0 and n_0, making F appear to be a constant matrix.
+
+12. Line 207: What does theta represent? It has not been defined previously. If the observables c depend on w(theta) and gamma_t^{(s)}(theta), then are these included in c^bar(n, q)? In that case, if theta contains n, the linearization of c^bar in n must carry the implicit assumption that n is also linearizable in w and gamma_t. How realistic is the assumption that n is linearizable within c^bar? Please provide a discussion about it.
+
+13. Line 249: The authors write, "the chi-square distribution for the input samples." This phrasing can be interpreted in two different ways: (1) a literal chi-square distribution with some degrees of freedom, or (2) the distribution of the chi-square quantity for the input samples. Since Figure 4 does not resemble a chi-square distribution, I assume the authors meant (2). Please clarify. In addition, please discuss why the chi-square quantity defined by the authors does not follow a chi-square distribution with some degrees of freedom.
+
+14. Line 278: The authors state, "as long as the statistically relevant ..." This condition seems optimistic. It is important to consider how likely the "ideal situation" is, rather than assuming it. If the authors plan to adopt non-linear models such as deep neural networks to explore the non-linearity of n in future work, I suggest adding a sentence about this direction. For example: "This work does not account for the case where significant n samples arise beyond the linear subspace in a non-negligible quantity, but we leave this as future research."
+
+15. Line 286: The manuscript describes some past analyses as "ad-hoc," but the proposed method itself appears to involve ad-hoc elements, such as minimizing chi-square while assuming it does not significantly affect the posterior, as well as some arbitrary threshold for the chi-square quantity. I suggest avoiding this terminology.
+
+======================================
+Comments on the authors' responses:
+
+16. Response to item 4: There seems to be a misunderstanding. My comment referred to the notation of the likelihood function, while the authors' response addressed the posterior density. By definition (see Fisher, 1922), the likelihood function is a function of the parameters given the data, not a function of the data itself (as specified by the authors). This definition has remained unchanged. For example, it should be written as L(q, n | D) in the abstract and L(q, n | c) in the introduction. Since the authors adopt a Bayesian framework, I recommend consulting at least a standard reference such as Bayesian Data Analysis (Gelman et al., 2013).
+
+17. Response to item 5: I encourage the authors to revisit the distinction between a density function and probability. While Wikipedia can serve as a quick reference, it should not be the primary reference in a scientific paper. Standard textbooks provide more rigorous definitions.
+
+18. Response to item 7: I remain curious: if the dimension is reduced from 80 to 3, how much information is lost? Does the 3-dimensional density estimator correctly represent the original 80-dimensional density after decoding? This relates back to my first comment in this review.
+
+19. Response to item 17: I am not sure how much space would be required to specify the functional form of c_hat(q, n), but since the authors consider this assumption important, could they provide some discussion on how realistic it is to assume that this function can be linearized in n?
+
+20. Response to item 18: The authors state in their response, "the compression scheme we develop will still be valid if 1 & 3 are violated but the compression still retains nearly all the cosmologically relevant information in n (Line 175)." This sentence seems to contain two unproven claims: (1) that the compression scheme is valid even if conditions 1 and 3 are violated, and (2) that the compression still retains nearly all relevant information in n. Both points need to be justified more rigorously.
+
+21. Response to item 20: The new sentence added to Item 3 also introduces another unproven claim: "the multiplicative errors in the likelihood function are at percent levels when the chi-square value is substantially smaller than 1." Since chi-square is computed for a finite set of N n_alpha samples, this may only hold for those samples. However, the posterior distribution could still differ significantly from the true posterior unless <chi-square> -> 0 and N -> infinity. More detail is needed to support this statement.
+
+22. Response to item 23: I agree that minimizing the quantity in Eqn (3) will provide the best optimization solution for a finite set of N n_alpha samples. However, my original question was why this minimization guarantees accurate posterior inferences. I remain unconvinced on this point for the reasons I explained in my earlier comments.
+
+24. Response to item 26: The authors acknowledge that they do not have a formal solution for optimizing posterior errors or providing a metric for the distribution. Would the authors consider identifying a set of unknowns that jointly minimizes the Wasserstein distance between two posterior distributions, rather than minimizing the current chi-square quantity?
+
+25. Response to item 26: The authors state that "getting the likelihood correct to <1% means that one also has the posterior correct to this level." I suggest exercising caution with this argument, as the accuracy of the posterior also depends on how well the n_alpha samples lying on the assumed linear subspace represent the full space.
+
+26. Response to item 27: Although the authors decided not to enumerate the possibilities, more details (even in a short footnote) would be very helpful for readers. Such details need not interrupt the flow of the paper but would strengthen clarity.
+
+27. Response to item 28: I recommend reconsidering the choice not to provide an algorithmic description in a formal table. Such tables are often included to avoid misinterpretation, miscoding, or unintended results, and to ensure reproducibility. While I understand the authors may wish to limit further work on this manuscript, reproducibility has become a key standard for publication in a scientific journal.
+
+28. Response to item 32: The authors ask readers to accept the proposed method without comparison to alternatives. In scientific writing, however, demonstrating either theoretical or empirical advantages is important. A comparison, even a brief one, would significantly strengthen the credibility of the method.
+
+29. Response to item 33: The authors indicate that defining the function f(q, n | D) might require several pages. Nonetheless, since the posterior is L(q, n)p(q)p(n), it would be valuable to provide as much detail as possible about L(q, n), p(q), and p(n) in the specific context of Section 3. What I particularly wish to understand is the form of f(q, u | D), since the authors marginalize over u. If this is already known to the authors, making it explicit would be very helpful to readers. At present, no details are provided that uniquely determine f(q, n | D) or f(q, u | D).
+
+30. Response to item 34: The response suggests that statistical significance has "some unit," connected to the chi-square quantity. This is surprising, since the chi-square statistic is generally unitless (with numerator and denominator units canceling). Statistical significance, expressed in terms of 1-sigma, 2-sigma, etc., is defined relative to a reference distribution and is not tied to physical measurement units. Please clarify this point further. Also, the distribution of the chi-square quantity in Eqn (3) has not been specified. While this may not be critical for optimization, the authors could provide more detail with careful consideration.
+
+31. Response to item 37: Please incorporate the response into the main text. Additional details are always welcome and would help the reader.

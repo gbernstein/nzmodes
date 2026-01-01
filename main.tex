@@ -67,8 +67,8 @@
 A typical Bayesian inference on the values of some parameters of
 interest $\vecq$ from some data $D$ involves running a Markov Chain (MC) to sample
 from the posterior $p(\vecq,\vecn | D) \propto \likeli(D | \vecq,\vecn)
-p(\vecq) p(\vecn),$ where $\vecn$ are some nuisance parameters \ed{with
-  separable prior.}  In \ed{some}
+p(\vecq) p(\vecn),$ where $\vecn$ are some nuisance parameters with
+  separable prior.  In some
 cases, the nuisance parameters are high-dimensional, and their
 prior $p(\vecn)$ is itself defined only by a set of samples that have
 been drawn from some other MC.  Two problems arise: first,
@@ -95,27 +95,27 @@ $n(z)$ of the galaxies.
 Consider an inference in which we have a vector of observable summary
 statistics \vecc\ that we are using to constrain a set of parameters of
 interest \vecq.  There is a model $\hatc(\vecq,\vecn)$ for the
-\ed{expectation value of the} observables which involves the parameters of interest, but also a
+expectation value of the observables which involves the parameters of interest, but also a
 vector \vecn\ of nuisance parameters.  
-We wish to characterize the Bayesian posterior \ed{density}
+We wish to characterize the Bayesian posterior density
 \begin{equation}
   p(\vecq | \vecc) \propto \int dn\, \likeli(\vecc | \vecq, \vecn) p(\vecq) p(\vecn),
 \label{eq:posterior}
 \end{equation}
-where \ed{$\likeli(\vecc | \vecq, \vecn)$ is a known likelihood function
+where $\likeli(\vecc | \vecq, \vecn)$ is a known likelihood function
 of the data, and we assume that the priors on $\vecq$ and $\vecn$ are separable
-to $p(\vecq)$ and $p(\vecn)$.}\footnote{Following the nomenclature for the
+to $p(\vecq)$ and $p(\vecn)$.\footnote{Following the nomenclature for the
 elements of Bayes's formula in, \eg, \url{https://en.wikipedia.org/wiki/Posterior_probability}.}
 This posterior is complex enough that it requires
 approximation by the output of a Markov Chain (MC) wandering across the space $(\vecq,\vecn).$
-\ed{Implicit in \eqq{eq:posterior} is that the prior $p(\vecn)$ is independent of
+Implicit in \eqq{eq:posterior} is that the prior $p(\vecn)$ is independent of
   the likelihood $\likeli$ for $\vecc,$ \eg\ the prior on $\vecn$ has been constrained using
-  data that are distinct from those entering the likelihood.}
+  data that are distinct from those entering the likelihood.
 
-The scenario we address here is when \emph{the prior $p(\vecn)$ is \ed{not
+The scenario we address here is when \emph{the prior $p(\vecn)$ is not
     available in evaluable form, rather we have only
-  a set of samples of $\vecn$ known to be drawn} from this
-  distribution,} Most MC samplers require that the posterior (and
+  a set of samples of $\vecn$ known to be drawn from this
+  distribution.} Most MC samplers require that the posterior (and
 hence the prior and likelihood) be an
 evaluable function of any value of the parameters. It is the general task of density estimators to convert the samples of $\vecn$ into an evaluable $p(\vecn).$  But when \vecn\ is of high dimension, two problems arise: first, there may be insufficient available samples to create a viable density estimator; second, sampling of the posterior in (\ref{eq:posterior}) becomes infeasible if the MC must traverse a high-dimensional space.
 
@@ -131,27 +131,31 @@ include the coefficients of some linear expansion of the redshift distributions 
   \label{eq:nzbasis}
 \end{equation}
 The $b_k$ are a set of predetermined basis functions for the redshift
-distribution, \ed{\eg\ these are boxcar functions if we are modeling $n(z)$ as
-  stepwise constant.}  In our case of analyzing the data from the  \textit{Dark Energy Survey} (DES), there are 10 distinct samples of galaxies---each designed to prefer galaxies in a limited range of redshift---which we can index by $s.$ Each has its own $n_s(z)$ to be characterized by coefficients $n_{sk}$ at $\approx100$ values of $k$, leading to $N=O(1000)$ parameters $n_{sk}$ to be considered.  The vector $\vecn$ of nuisance parameters would be the concatenation of all the $n_{sk}.$ For clarity, we will still write this as $\vecn=\{n_1,n_2,\ldots,n_N\}$ and demonstrate the method with a single galaxy sample's $n(z)$.
+distribution, \eg\ these are boxcar functions if we are modeling $n(z)$ as
+  stepwise constant.  In our case of analyzing the data from the  \textit{Dark Energy Survey} (DES), there are 10 distinct samples of galaxies---each designed to prefer galaxies in a limited range of redshift---which we can index by $s.$ Each has its own $n_s(z)$ to be characterized by coefficients $n_{sk}$ at $\approx100$ values of $k$, leading to $N=O(1000)$ parameters $n_{sk}$ to be considered.  The vector $\vecn$ of nuisance parameters would be the concatenation of all the $n_{sk}.$ For clarity, we will still write this as $\vecn=\{n_1,n_2,\ldots,n_N\}$ and demonstrate the method with a single galaxy sample's $n(z)$.
 
 One approach would be to run a new MC over \vecq\ for each of the samples
 we have of \vecn, and then concatenate these to effect marginalization over
-\vecn.  This is clearly infeasible if a \ed{thousands or more} of \vecn\ samples are needed to characterize the prior in this space.
+\vecn.  This is clearly infeasible if thousands or more of \vecn\ samples are needed to characterize the prior in this space.
 
 Facing this problem for the cosmological analyses of the 3-year data
 (Y3) from DES,
 \citet{hyperrank} devised a scheme whereby
-the samples of \vecn, \ed{which we write as $\{\vecn_\alpha\}$ for $\alpha\in
-  1\ldots N_\alpha,$} are placed in a grid within some $M$-dimensional 
+the samples of \vecn, which we write as $\{\vecn_\alpha\}$ for $\alpha\in
+  1\ldots N_{\rm samp},$ are \ed{assigned to equally-spaced grid points} within some $M$-dimensional 
 unit hypercube $\mathcal{H}$.  The coordinates \vecu\ within the hypercube
 are considered the compressed parameters of $n(z),$ and the
 decompression function
 $\hat{\vecn}(\vecu)$ outputs the $\vecn_\alpha$ sample at the nearest grid point to
-  \vecu.  This solves the problem of creating a continuous \vecu\
-  domain, and \ed{gives each sample $\vecn_\alpha$ equal probability under
-  $p(\vecu),$ maintaining the meaning of the input samples.}
-But the \ed{\emph{output} of the function $\hat\vecn(\vecu)$,} and the resultant likelihood
-  function \ed{$\likeli(\vecc | \vecq, \vecu),$ are discontinuous over $\vecu.$}
+any  \vecu, \ed{\ie\ nearest-neighbor interpolation.}
+\ed{In the example
+  application described in Section~\ref{sec:app}, this procedure would assign an
+  $N=80$-dimensional \vecn\ to each grid point placed in an $M=3$-dimensional hypercube.}
+This solves the problem of creating a continuous \vecu\
+  domain, and gives each sample $\vecn_\alpha$ equal probability under
+  $p(\vecu),$ maintaining the meaning of the input samples.
+But the \emph{output} of the function $\hat\vecn(\vecu)$, and the resultant likelihood
+  function $\likeli(\vecc | \vecq, \vecu),$ are discontinuous over $\vecu.$
 Various strategies are proposed by \citet{hyperrank} to assign the $\vecn_\alpha$ to the grid points in
 $\mathcal{H}$ based on summary statistics, to reduce the
 discontinuities---but the function is never smooth.
@@ -170,8 +174,8 @@ described by \citet{bridle02} and reprised by \citet{hans} for the $n(z)$ applic
 \item The prior $p(\vecn)$ can also be assumed to be normal, with a mean taken to be $\bar\vecn = \left\langle\vecn\right\rangle$ and covariance matrix taken to be $\covm_n=\left\langle(\vecn-\bar\vecn)(\vecn-\bar\vecn)^T\right\rangle$ using the samples of \vecn\ we are given.
 \item The model \hatc\ can be linearized in \vecn\ about fiducial values $\vecq_0, \vecn_0$ without loss of accuracy exceeding measurement errors, with the derivatives independent of \vecq.
 \end{enumerate}
-Under these conditions, the marginalization over \vecn\ is \ed{shown to be
-  algebraically} equivalent to adding terms to $\covm_c,$ such that any MC process need not sample \vecn\ at all.  
+Under these conditions, the marginalization over \vecn\ is shown to be
+  algebraically equivalent to adding terms to $\covm_c,$ such that any MC process need not sample \vecn\ at all.  
 
 We describe here an approach that is algebraically similar to this analytic marginalization,
 but does not require the 2nd condition of Gaussianity for
@@ -185,17 +189,16 @@ applied to the \vecu\ values implied by the known \vecn\ samples to yield a
 prior $p(\vecu)$ that can be used for the MC of the cosmological posterior.  The
 model \hatc, and hence $\likeli,$ will be continuous over this low-dimensional
 \vecu\ space, and marginalization over \vecu\ will yield posterior probabilities
-very close to marginalization over the original \vecn.  \ed{In the example
-  application described in Section~\ref{sec:app}, an 80-dimensional \vecn\ is
-  compressed into a 3-dimensional space.}
+very close to marginalization over the original \vecn.  
 
 \section{Derivation}\label{sec:deriv}
 We assume that we do have a multivariate normal likelihood for the
 observables \vecc\, with the mean being some model
-$\hatc(\vecq,\vecn)$ and a fixed, \ed{known} covariance matrix $\covm_c.$ In this
+$\hatc(\vecq,\vecn)$ and a fixed covariance matrix $\covm_c,$ \ed{known \textit{a
+  priori} via analytic calculations and/or jacknifing of the data or other methods.}   In this
 section we will assume that the \vecn\ vectors have been shifted by
 the mean of the samples $\vecn_0 \equiv \left\langle \vecn_\alpha
-\right\rangle,$ \ed{generating a replacement set of $n_\alpha$ that have zero mean.}
+\right\rangle,$ generating a replacement set of $\vecn_\alpha$ that have zero mean.
 We seek some function $\hat{\vecn}(\vecu)$ of a much lower-dimensional
 vector \vecu\ which can be substituted for \vecn\ and yield nearly the
 same likelihood function for any \vecn\ in the domain spanned by the
@@ -203,39 +206,94 @@ samples $\{\vecn_\alpha\}.$
 This means we want maps $\vecn_\alpha\rightarrow
 \vecu_\alpha \rightarrow \hat{\vecn}_\alpha,$ with ${\rm dim}(\vecn)={\rm dim}(\hat{\vecn})=N$ and ${\rm dim}({\vecu})=M\ll N.$ We wish to find maps such that replacing $\vecn$ with
 $\hat\vecn$ alters the cosmological inference by much less than the
-other uncertainties in the model or data.  We will implement this by minimizing the
-distance in the space $\vecc$ between the
-model generated by $\vecn$ and that by $\hat\vecn$, using the
-observations' covariance matrix $\covm_c$ as a metric for the
-distance.\footnote{More precisely, the inverse of the covariance
-  matrix is the metric.}  This is equivalent to the $\chi^2$ of the difference
-between the original and compressed models for the data:
-\begin{equation} \left\langle \chi^2 \right\rangle
-=  \frac{1}{N_\alpha} \sum_\alpha
+other uncertainties in the model or data.
+\ed{Inferences use the likelihood of the observed $\vecc$ under the
+assumed Gaussian probability distribution:
+\begin{equation}
+  -2\log\likeli(\vecc | \vecq,\vecn) = |2\pi C_c| + \left[\vecc-\hatc(\vecq,\vecn)\right]^T
+  C^{-1}_c\left [\vecc-\hatc(\vecq,\vecn)\right].
+\label{eq:like1}
+\end{equation}
+While ideally the loss function for a compression scheme would be some direct
+measure of the biases induced in the inferred parameters \vecq, we will instead
+target a minimization of the expected level of mis-estimation of the likelihood
+function $\likeli.$ The posterior credible region for \vecq\ at fixed
+\vecc\ will correspond to a range of $\Delta(2\log\likeli)\approx 1$ (unless
+dominated by priors.)  Thus we can be confident that a compression that changes
+the inferred $\log\likeli$ by $|\Delta\log\likeli|\ll 1$ will change
+inferred \vecq\ values by a small fraction of the measurement uncertainty.
+It is certainly true that as $\langle
+\Delta\log\likeli \rangle \rightarrow 0,$ the substitution of $\hat\vecn$ for $\vecn$
+has no effect on the calculated posterior density of \vecq.
+We
+do not, however, offer any formal proof or bound on the relation between
+$\log\likeli$ errors and \vecq\ errors induced by compression.
+
+If the compression scheme replaces $\vecn$ with $\hat\vecn,$ then we will assign
+an incorrect $\hat\likeli$ 
+\begin{align}
+\label{eq:like2}
+   -2\log\hat\likeli & = |2\pi C_c| + \left[\vecc-\hatc(\vecc,\vecn)-\Delta_c\right]^T
+                      C^{-1}_c\left [\vecc-\hatc(\vecq,\vecn) - \Delta_c\right], \\
+  \Delta_c & \equiv \hatc(\vecq,\hat\vecn) -  \hatc(\vecq,\vecn).
+\end{align}
+Expanding (\ref{eq:like2}) and subtracting (\ref{eq:like1}) yields the
+compression error in the likelihood:
+\begin{equation}
+ \Delta(-2\log\likeli) =  \Delta_c^T C^{-1}_c \Delta c +
+                        2\left[\vecc-\hatc(\vecq,\vecn)\right]^T C_c^{-1} \Delta_c.
+\label{eq:like3}
+\end{equation}
+If the model $\hatc(\vecq,\vecn)$ properly describes the mean of the
+observations $\vecc,$ then the expectation value of the rightmost term under the
+observational noise is zero. A useful measure of the typical mis-estimation of
+$\vecq$ induced by
+the compression of \vecn\ is therefore the term $\Delta_c^T C^{-1}_c \Delta_c.$
+Marginalizing this quantity over the (sampled) prior for $\vecn$ yields the loss
+function that we will minimize during compression:
+\begin{equation}
+ \left\langle \chi^2 \right\rangle =  \frac{1}{N_{\rm samp}} \sum_\alpha
                                             \left[ \hatc(\vecq,\vecn_\alpha) - \hatc(\vecq,\hat{\vecn}_\alpha) \right]^T
                                             \covm_c^{-1}
                                             \left[ \hatc(\vecq,\vecn_\alpha) - \hatc(\vecq,\hat{\vecn}_\alpha) \right].
 \label{eq:chisq}
 \end{equation}
-If the data are in fact drawn from the model $\hatc(\vecq,\vecn)$ with
-a Gaussian likelihood, then this is also the mean shift in $-2\log\likeli$
-from the compression.  It is \emph{not}, however, equal to the mean
-shift of the overall log of the posterior in
-\eqq{eq:posterior}---rather, $\left\langle\chi^2\right\rangle$ is serving as a
-proxy for the true log-likelihood shift.  \ed{It is true, at least, that as $\langle
-\chi^2 \rangle \rightarrow 0,$ that the substitution of $\hat\vecn$ for $\vecn$
-has no effect on the calculated posterior density, so can be considered a
-lossless compression as far as inference on \vecq\ is concerned.}
+This quantity is the $\chi^2$ of the difference
+between the original and compressed models for the data, marginalized over the
+prior on \vecn\ as represented by the samples we are provided.
+It is also the mean-squared distance
+in the space $\vecc$ between the
+model generated by $\vecn$ and that by $\hat\vecn$, using the
+observations' covariance matrix $\covm_c$ as a metric for the
+distance.\footnote{More precisely, the inverse of the covariance
+  matrix is the metric.}
+
+The use of \eqq{eq:chisq} implicitly assumes that $N_{\rm samp}$ is sufficiently
+large that averaging $\chi^2$ over the samples is equivalent to integrating over the
+entire $\vecn$ space.    One might be concerned that a compression scheme could
+overtrain on \eqq{eq:chisq} in the sense of yielding small $\chi^2$ at the
+sample points $\vecn_\alpha,$ but have large $\chi^2$ at \vecn\ values between
+the samples.  If, however, we use a simple linear  projection for compression to $M$
+dimensions, there are $NM$ free parameters, whereas the input samples have
+$NN_{\rm samp}$ values to operate on.  If $N_{\rm samp}\gg M,$ we assert without
+proof that the compression
+function does not have enough freedom to overtrain except in pathological cases
+of sampling.  
+But our scenario already assumes that the samples are
+sufficient to conduct marginalization over $\vecn$ when estimating
+$p(\vecc|\vecq,\vecn),$ which means they must be numerous $(N_{\rm samp}\gg N)$ and span the space of
+plausible $\vecn$ values under $p(\vecn).$ }
 
 We next assume that the compression is linear, $\hat\vecn=\matX\vecn,$
-for some $N\times N$ matrix that is idempotent ($\matX\matX = \matX$).  We will further linearize the dependence of $\hat\vecc$ on $\vecn,$ specifically assuming that (in scalar notation) 
+for some $N\times N$ matrix that is idempotent ($\matX\matX = \matX$).  We will further linearize the dependence of $\hatc$ on $\vecn,$ specifically assuming that (in scalar notation) 
 \begin{equation}
-    \frac{\partial^2 \hat c}{\partial n^2} n \ll \frac{\partial \hat c}{\partial n}
+    \frac{\partial^2 \bar c}{\partial n^2} n \ll \frac{\partial \bar c}{\partial n}
+\label{eq:linearmodel}
 \end{equation}
 over the full range of variation of $\vecn.$  
 With these two assumptions, \eqq{eq:chisq} becomes
 \begin{equation}
-  \left\langle \chi^2 \right\rangle = \frac{1}{N_\alpha} \sum_\alpha
+  \left\langle \chi^2 \right\rangle = \frac{1}{N_{\rm samp}} \sum_\alpha
   \left[ (\matI-\matX)\vecn_\alpha\right]^T \matF  \left[ (\matI-\matX)\vecn_\alpha\right].
   \label{eq:linearized}
 \end{equation}
@@ -249,7 +307,7 @@ We use the Jacobian matrix of the model $\hatc$ to define
 \end{equation}
 This quantity is also the Fisher matrix giving the information
 provided by the observations $\vecc$ about the nuisance parameters
-\vecn.  In many cases this matrix will be
+\vecn\ \ed{under a Gaussian likelihood \citep{TTH}.}  In many cases this matrix will be
 rank-deficient and/or poorly conditioned, since the observables are not
 likely to be very informative on $\vecn$---if they were, we might not be
 concerned with establishing a prior on $\vecn$ to begin with.
@@ -284,7 +342,7 @@ For a chosen rank $M$ of the
 transformation matrix $X$, our task becomes to identify the
 eigenvectors $V_X$ that minimize
 \begin{align}
-  \left\langle \chi^2\right\rangle & = \frac{1}{N_\alpha} \sum_\alpha
+  \left\langle \chi^2\right\rangle & = \frac{1}{N_{\rm samp}} \sum_\alpha
   \left[ \matY \vecn_\alpha\right]^T \matF  \left[\matY
                                      \vecn_\alpha\right] \\
        & = \trace \left[ \covm_n V_X \proj_{-M} V_X^T \matF V_X
@@ -379,11 +437,11 @@ In summary, the procedure for dimensional reduction is:
     $(\matLam_G,\matV_G).$  Place the eigenvalues in descending order.
   \item Choose the size $M$ of the compressed representation to be the
     minimum that keeps the $\left\langle\chi^2\right\rangle$ value in
-    \eqq{eq:chiresid} below a chosen threshold, presumably $\ll 1.$ \ed{If this
+    \eqq{eq:chiresid} below a chosen threshold, presumably $\ll 1.$ If this
       is achieved, the multiplicative errors in the likelihood induced by the
       compression are at percent
-      levels, so errors in the posterior likelihoods are bounded to the same level.}
-  \item The encoding matrix $E$ and decoding matrix $D$ are formed as
+      levels. %, so errors in the posterior likelihoods are bounded to the same level.
+  \item Form the encoding matrix $E$ and decoding matrix $D$ as
     in \eqq{eq:DE}, taking the inverse $\matLam_n^{-1/2}$ to be zero
     for any eigenvalues that are zero (or within roundoff errors).
   \item Compress all incoming (mean-subtracted) samples using
@@ -403,19 +461,36 @@ In summary, the procedure for dimensional reduction is:
 The ability to accomodate non-Gaussian distributions of the
 nuisance-parameter space is the principle
 advantage of our method over the single-step covariance-inflation
-method of \citet{hans}.  A further advantage of our
-compression$+$density-estimator scheme over covariance inflation is
-that nonlinearities in the data model, including presence of
-significant $\partial^2\hatc/\partial\vecq\partial\vecn,$ will be
-correctly handled in the inference to the extent that the higher
-derivatives are confined to the compressed subspace of $\vecn.$ 
-But even in the case where linearity and gaussianity in \vecu\ hold,
+method of \citet{bridle02} and \citet{hans}, \ie\ one can drop assumption (2) of the three listed for
+this method in the Introduction.
+  \ed{But the compression method is also more robust in other ways: it defines
+   projection of \vecn\ values onto an $M$-dimensional linear subspace.  We can
+   in fact also drop assumptions (1) of Gaussian likelihood and (3) of linearization
+   of the model $\hatc(\vecq,\vecn)$ that were used to derive the subspace,
+   if we can instead demonstrate that: \emph{no component of \vecn\
+     normal to the subspace can significantly alter the likelihood of the data,
+     when $\vecn$ and $\vecq$ range across their regions of significant
+     probability.}  If this statement is true, then marginalization over the
+   compressed subspace will yield inferences consistent with the (usually
+   infeasible) marginalization over the full space of \vecn, regardless of the
+   nature of the model and likelihood functions.  }
+
+%   The fidelity of marginalization over the distribution of $\hat\vecn,$
+%   confined to the subspace to marginalization over the original $\vecn$
+%   samples cannot be directly confirmed if the latter marginalization is
+%   computationally infeasible.  But some necessary conditions can be checked,
+%   \eg\ by confirming that $\langle \chi^2 \rangle$ is indeed small across the
+%   samples $\vecn_\alpha.$ We give an example in Section~\ref{sec:app}.}
+%
+\ed{Even in the case where all three assumptions of the covariance-inflation
+method hold true, 
 there are practical advantages of compressing the nuisance 
-variables and retaining them in the cosmological Markov chain rather
-than using the covariance-inflation method for analytic
-marginalization.  One can, for example, examine the posterior
-distributions of \vecu\ to see how the data have constrained the prior.  For example, if the cosmological posterior for $\vecu$ is at the edge of the prior, this would potentially indicate an inconsistency between the data and
-the prior.
+variables and retaining them in the cosmological Markov chain instead of doing
+the analytic marginalization.}   One can, for example, examine the posterior
+distribution of \vecu\ to see how the data have \ed{altered the prior
+  distribution of $\vecu.$  If the posterior for $\vecu$ is at the
+edge of the prior, this would potentially indicate an inconsistency between the
+data and the prior.}
   
 
 \section{Application}\label{sec:app}
@@ -427,12 +502,12 @@ the DES galaxy catalogs.  Each of these Maglim ``lens bins''
 is selected with cuts on galaxy fluxes and
 colors in an attempt to generate a sample that is confined to a
 particular redshift range, as described in \citet{y6maglim}.  Once each bin's
-\ed{galaxy selection criteria are} chosen, a combination of 
+galaxy selection criteria are chosen, a combination of 
 photometric techniques \citep{y6lenspz,y6pz} and clustering information
 \citep{y6wz} is used to generate samples from the posterior
-distribution of  \ed{$n(z)$ functions applicable to the bin members,} conditioned
-on the photometric and clustering data, \ed{\ie\ the $p(\vecn)$ that will become the
-  prior for the inference of \vecq.}
+distribution of  $n(z)$ functions applicable to the bin members, conditioned
+on the photometric and clustering data, \ie\ the $p(\vecn)$ that will become the
+  prior for the inference of \vecq.
 
 In the simplest case,
 there are 6 cosmological parameters of interest, $\vecq = \{\Omega_m,
@@ -452,17 +527,24 @@ $n(z).$
 
 We hence turn to the modal projection technique herein to reduce the
 dimensionality to those directions in $\vecn$ space in which the samples span a large
-enough range to alter the $\hatc(\vecn)$ at \ed{levels comparable to the
-  precision of the observations.}
+enough range to alter the $\hatc(\vecn)$ at levels comparable to the
+  precision of the observations.
 
-The observable quantities $\vecc$ whose modeling depends upon these nuisance
-parameters are the angular autocorrelation $w(\theta)$ of the 
-galaxies, and the cross-correlations $\gamma_t^{(s)}(\theta)$ between
+The observable quantities \ed{are the autocorrelation $w(\theta)$ of the 
+galaxies' angular positions as a function of angular separation $\theta$;
+  and the cross-correlations $\gamma_t^{(s)}(\theta)$ between 
 these galaxies' positions and the weak gravitational lensing shear
-observed from groups $1\le s \le 4$ of source galaxies.  The
-derivatives of the model for each observable, and the expected
-covariance, are calculated from theory with the tools described in
-\citet{y6model} and the \texttt{Cosmosis} software\footnote{\url{https://cosmosis.readthedocs.io/en/latest/}} \citep{cosmosis}.
+observed from groups $1\le s \le 4$ of source galaxies.  The vector $\vecc$ is
+the concatenation of values of $w$ and $\gamma_t$ in a set of bins of $\theta.$}
+\ed{The model $\hatc(\vecq,\vecn)$ for the observables consists of integrations
+  over redshift $z$ of products of the redshift distributions $n(z)$ with
+  solutions of General Relativity differential equations for the expansion
+  history and growth of density fluctuations in the Universe.  The covariance
+  matrices $\covm_c$ are even more complex.  The derivations of both are
+  described in full detail in 
+ \citet{y6model}. We use the same \texttt{Cosmosis} software \citep{cosmosis}
+ employed in that paper to
+calculate the partial derivatives needed in deriving the compression scheme.}
 
 \begin{figure}
   \center
@@ -477,15 +559,16 @@ covariance, are calculated from theory with the tools described in
   component $\widetilde u_i$ to match the 1d distribution of the input samples' $u_i$; (4) decompressing the transformed $u_i$ draws back into full-length $\vecn$ samples; finally (5) restoring the mean $\bar\vecn.$  The dashed
   line connects the mean values of $n(z),$ which are the same for
   generated samples as for the input samples, by construction.  The compression substantially lowers the variance of $n(z)$ at individual values of $z$ without significantly altering the variation of cosmological signals that the entire $n(z)$ predicts.
-  [Although the $n(z)$ functions are calculated out to $z=4,$ we
-  truncate this and other plots at lower $z$ to emphasize the
-  lower-redshift regime where this bin's galaxies are primarily found.]}
+  [Although the $n(z)$ functions are calculated \ed{for $0<z<4,$} we
+  truncate this plot to emphasize the
+  redshift regime where this bin's galaxies are primarily found.]}
   \label{fig:violins}
 \end{figure}
 
 We present results for mode-compression sampling of the $n(z)$
-parameters for redshift bin 4 of the DES Y6 lens galaxies.  Figure~\ref{fig:violins}
-plots the distributions of the individual elements of $n(z)$ in the
+parameters for redshift bin 4 of the DES Y6 lens galaxies.  The orange violins
+in Figure~\ref{fig:violins}
+plot the distributions of the individual elements of $n(z)$ in the
 input 3000 samples.  As per the procedure described in this paper, the
 mean \vecn\ is subtracted from each sample and the covariance
 $\covm_n$ computed.  This is then combined with the
@@ -514,11 +597,16 @@ $\chi^2$ vs the dimension $M$ of the compressed space, as per
 \eqq{eq:chiresid}.  This modelling error induced by compression drops
 exponentially with the number of retained modes.  We have somewhat arbitrarily
 chosen a threshold of $\chi^2<0.025$ for each galaxy sample in order to keep the
-total impact of compression \ed{of 10 samples} to $\ll 1.$ This is attained with $M=3$ modes for this bin.  The right side of Figure~\ref{fig:chiresid} plots the individual modes
+total impact of compression of 10 samples to $\ll 1.$ This is attained with $M=3$ modes for this bin.  The right side of Figure~\ref{fig:chiresid} plots the individual modes
 ${\rm U}_i(z),$ \ie\ the rows of the decompression matrix $\matD$ such
 that $\hat\vecn = \bar\vecn + \sum_{i\le M} u_i \vecU_i.$ Recall that
-each mode's coefficient $u_i$ will be a random deviate with unit variance. Each of the three modes appears to effect some combination of a $z$ shift of the main $n(z)$ peak, a change of the peak's shape/width, and a change in the low-$z$ contamination. We have also plotted mode 7 in the Figure, to illustrate a mode of variation that is present in the samples, but has unobservable consequences.  Mode 7 is more oscillatory in redshift than the three retained modes, and does not alter the low-$z$ tail.
-
+each mode's coefficient $u_i$ will be a random deviate with unit variance. Each
+of the \ed{first} three modes appears to effect some combination of a $z$ shift
+of the main $n(z)$ peak, a change of the peak's shape/width, and a change in the
+low-$z$ contamination. We have also plotted mode 7 in the Figure, to illustrate
+a mode of variation that is present in the samples, but has unobservable
+consequences.  Mode 7 is more oscillatory in redshift than the three retained
+modes, and does not alter the low-$z$ tail. 
 
 \begin{figure}
   \center
@@ -527,7 +615,7 @@ each mode's coefficient $u_i$ will be a random deviate with unit variance. Each 
     \ie\ the elements of $\vecu = \matE \vecn.$
   of the input samples after encoding.  The coefficients, especially 
   $u_1,$ are significantly skewed so a normal distribution would be an
-  inaccurate model.  Instead we model each $u_i$ as an
+  inaccurate model.  Instead we model each $u_i$ as a
   ``denormalizing'' function of a unit-normal variable, as per
   \eqq{eq:denorm}.  The blue histograms and contours show the
   distributions obtained using this element-by-element transformation
@@ -564,9 +652,22 @@ redshift distribution via a 2-step process:
 
 The blue violins in Figure~\ref{fig:violins} show the distributions
 of the $n(z)$ values that are generated by drawing $\widetilde{\vecu}$
-values from a unit Gaussian.  It is clear now that projecting away the
+values from a unit Gaussian.
+\ed{The means of the two distributions (centers of the violins)
+  are, by construction, identical.  The blue, compression-derived distributions
+  are shorter (narrower distributions) than the orange input distributions,
+  which is a result of projecting away modes of \vecn\ that have no measurable influence on the
+  observable \vecc\ values.  Removing modes reduces the variance of $n(z)$ at any
+  particular $z$, by varying degrees at different values of $z.$ The compression
+scheme acts as noise reduction on the $n(z)$ estimates, where ``noise'' means a
+fluctuation that does not detectably impact measurable quantities.} 
+Projecting away the
 unobservable fluctuations in $n(z)$ has substantially reduced the
-variance of the function at any \emph{individual} $z$ value, but the \emph{collective} $n(z)$ behavior still retains the same observable influence on the summary statistics $\vecc$.  To check whether we have achieved our goal
+variance of the function at any \emph{individual} $z$ value, but the
+\emph{collective} $n(z)$ behavior still retains the same observable influence on
+the summary statistics $\vecc$.
+
+To check whether we have achieved our goal
 of leaving the observable consequences of the $n(z)$ variation
 unchanged, we calculate the distribution of
 \begin{equation}
@@ -579,7 +680,9 @@ for the cases when (1) the $\vecn$ are drawn from the input samples, vs
 measures the deviation of the model from that implied by the mean
 vector $\vecn_0$ at some chosen nominal value of cosmological
 parameters $\vecq$ (we also fix the other nuisance parameters of the
-DES model for this test).
+DES model for this test).\footnote{\ed{Please note that this $\chi^2$ quantity
+    is generated from nuisance parameter samples, not by any process that should
+    reproduce the standard $\chi^2$ distribution.}}
 
 \begin{figure}
   \center
@@ -595,19 +698,25 @@ DES model for this test).
   method.  This lower-dimensional model for the prior on $n(z)$
   reproduces the original samples' result very well.  By comparison,
   the dash-dotted red histogram generates samples of $n(z)$ using
-  the \textit{ad hoc} method of \eqq{eq:zs}, which reproduces the
-  observable behavior of the original samples very well.  This method's two
+  the \textit{ad hoc} method of \eqq{eq:zs}.  This method's two
   parameters $z$ and $s$ are given priors to match the distributions
   of the mean of $n(z)$ over $z$, and the standard deviation of $z$,
   present in the input samples.  The \textit{ad hoc} method produces
   $n(z)$ fluctuations with $\approx20\%$ larger $\chi^2$ from the mean,
-  on average, than the input distribution has.}
+  on average, than the input distribution has. \ed{[Note the logarithmic horizontal
+    axis.]} }
 \label{fig:chihist}
 \end{figure}
 
-Figure~\ref{fig:chihist} shows the results: the $\chi^2$ distribution
-for the input samples is indistinguishable from that of the samples
+Figure~\ref{fig:chihist} shows the results: the \ed{distribution of the $\chi^2$
+  values defined by \eqq{eq:chihist}
+using
+the input samples is indistinguishable from the distribution of this $\chi^2$
+using samples of \vecn}
 generated by our compressed, normalized representation.
+\ed{Note that this agreement indicates that the approximation of linearity of the
+  model in \eqq{eq:linearmodel} is sufficiently accurate in this application to
+  yield an accurate compression scheme.}
 The Figure also shows the $\chi^2$ distribution resulting from samples
 generated by the method used in the DES Y3 analysis \citep{y3pz}.  In
 that case, the $n(z)$ for each galaxy sample was given an \textit{ad
@@ -640,7 +749,7 @@ For instance, in the DES Y6 analysis, we use an $\vecn$ that is a
 concatenation of the parameters of $n(z)$ for 4 bins of lens source
 galaxies.  Since each output sample from the  redshift-estimate
 process describes all 4 bins, we know the cross-correlations between
-the bins' $n(z)$ behavior, and the compression process described
+\ed{distinct} bins' $n(z)$ \ed{values,} and the compression process described
 herein will properly preserve these correlations in the subsequent
 cosmological analysis.  In the DES Y6 analysis, we have also extended
 the nuisance parameter vector $\vecn$ to include the multiplicative
@@ -651,7 +760,7 @@ and the $n(z)$ estimates.
 \section{Summary}
   We present a linear dimensionality reduction technique that has the
   aim of making it feasible to produce continuous density estimators
-  for nuisance parameters that \ed{have no evaluable prior, and} are characterized only
+  for nuisance parameters that have no evaluable prior, and are characterized only
   from a set of samples in 
   a high-dimensional space $\vecn.$  This is essentially a principle
   components analysis that is adjusted to separate contributions to
@@ -660,17 +769,18 @@ and the $n(z)$ estimates.
   marginalization over the distribution of $\vecn$ even for
   non-Gaussian distributions, as long as the derivatives of the
   log-likelihood of the data with respect to $\vecn$ are nearly
-  constant over the posterior domain.  Indeed the effect of the
-  nuisance parameters on the inference will be correctly calculated
-  even if these derivatives vary across the posterior domain, as long
-  as the statistically relevant values of $\vecn$ do not deviate
-  significantly from the linear subspace defined by our compression.
-The mode-projection technique
-  is also useful as a method of projecting away irrelevant
-  noise fluctuations in $\vecn.$
+  constant over the posterior domain.
+  \ed{The compression method is also robust to any nonlinearities
+    in the model and non-Gaussian likelihoods that lie \emph{within} the
+    subspace of $\vecn$ defined 
+    by the compression, as long as $\vecn$ components normal to this
+    subspace do not have detectable effects on the data model.}
+ The mode-projection technique
+  is essentially a method of projecting away irrelevant
+  fluctuations in $\vecn.$
 
-\ed{This technique was developed} for the case when
-  $\vecn$ represents the redshift distributions of galaxies in DES.  \ed{Some
+This technique was developed for the case when
+  $\vecn$ represents the redshift distributions of galaxies in DES.  Some
   attempts at sampling the posterior $p(\vecq| \vecc)$ while fully respecting
   the prior $p(\vecn)$ as embodied by the samples $\{\vecn_\alpha\}$ have
   proven infeasible, such as concatenating MC's run at every $\vecn_\alpha,$ or the
@@ -694,13 +804,16 @@ While this new approach to marginalizing over $n(z)$  has minimal consequence fo
   accurate posteriors in future experiments where the $n(z)$
   prior's uncertainty is a dominant contributor to the cosmological posterior,
   and can be generally applicable to other analyses where critical nuisance parameters
-  do not have evaluable priors.}
+  do not have evaluable priors.
 
 
   \begin{acknowledgments}
 G.M.B. acknowledges support from NSF grant AST-2205808 and DOE award DE-SC0007901.
 W. d’A. acknowledges support from the  MICINN projects PID2019-111317GB-C32, PID2022-141079NB-C32 as well as predoctoral program AGAUR-FI ajuts (2024 FI-1 00692) Joan Or\'o.
-The project that gave rise to these results received the support of a fellowship to A. Alarcon from "la Caixa" Foundation (ID 100010434). The fellowship code is LCF/BQ/PI23/11970028.
+The project that gave rise to these results received the support of a fellowship
+to A. Alarcon from "la Caixa" Foundation (ID 100010434). The fellowship code is
+LCF/BQ/PI23/11970028.  \ed{We also thank the anonymous referee for pointing out
+portions of the paper in need of improvement.}
 
 Funding for the DES Projects has been provided by the U.S. Department of Energy, the U.S. National Science Foundation, the Ministry of Science and Education of Spain, 
 the Science and Technology Facilities Council of the United Kingdom, the Higher Education Funding Council for England, the National Center for Supercomputing 
@@ -739,18 +852,18 @@ the pipelines and validation tests; and promoting the science analysis.
 \begin{thebibliography}{dummy}
 %\bibliography
 %\bibliographystyle{aasjournal}
-% Y6 WZ paper
-\bibitem[d'Assignies et al.(2025)]{y6wz} d'Assignies, W. et al.\ 2025
-  (in preparation)
-
 \bibitem[Bridle et al.(2002)]{bridle02}
 Bridle, S. L., Crittenden, R., Melchiorri, A., Hobson, M. P., Kneissl, R., and Lasenby, A. N. 2002, \mnras, 335, 1193, 
 doi:10.1046/j.1365-8711.2002.05709.x
  
 \bibitem[Cordero et al.(2022)]{hyperrank} Cordero, J.~P., Harrison, I., Rollins, R.~P., et al.\ 2022, \mnras, 511, 2170. doi:10.1093/mnras/stac147
 
+% Y6 WZ paper
+\bibitem[d'Assignies et al.(2025)]{y6wz} d'Assignies, W. et al.\ 2025,
+arXiv:2510.23566
+
 % lenses paper
-\bibitem[Giannini et al.(2025)]{y6lenspz} Giannini, G. et al.\ 2025 (in preparation)
+\bibitem[Giannini et al.(2025)]{y6lenspz} Giannini, G. et al.\ 2025, arXiv:2509.07964
 
 \bibitem[Hadzhiyska et al.(2020)]{hans} Hadzhiyska, B., Alonso, D., Nicola, A., et al.\ 2020, \jcap, 2020, 056. doi:10.1088/1475-7516/2020/10/056
 
@@ -758,18 +871,20 @@ doi:10.1046/j.1365-8711.2002.05709.x
   Myles, J. et al.\ 2021, \mnras, 505, 4249,
   doi:10.1093/mnras/stab1515
   
-\bibitem[Giannini et al.(2025)]{y6maglim} Weaverdyck, N. et al.\ 2025 (in preparation)
+% Y6 modelling paper
+\bibitem[Sanchez-Cid et al.(2025)]{y6model} Sanchez-Cid et al.\ 2025
+  (in preparation)
 
-\bibitem[Yin et al.(2025)]{y6pz} Yin, B. et al.\ 2025 (in preparation)
+\bibitem[Tegmark et al.(1997)]{TTH} Tegmark, M., Taylor, A.~N., \& Heavens,
+  A.~F.\ 1997, \apj, 480, 1, 22. doi:10.1086/303939 
+  
+\bibitem[Weaverdyck et al.(2025)]{y6maglim} Weaverdyck, N. et al.\ 2025 (in preparation)
+
+\bibitem[Yin et al.(2025)]{y6pz} Yin, B. et al.\ 2025, arXiv:2510.23566
   
 \bibitem[Zuntz et al.(2015)]{cosmosis}
   Zuntz, J. et al. 2015, Astronomy and Computing, 12, 45,
   doi:10.1016/j.ascom.2015.05.005
-
-% Y6 modelling paper
-\bibitem[Sanchez-Cid et al.(2025)]{y6model} Sanchez-Cid et al.\ 2025
-  (in preparation)
-  
 \end{thebibliography}
 
 \allauthors
