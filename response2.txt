@@ -17,7 +17,7 @@ on arXiv (Yin et al, d'Assignies et al, Giannini et al).
 >
 
 We appreciate the comment, and hope the referee agrees that optimizing
-a paper for its readers involves some tradeoff between showing more steps and
+a paper for its readers involves some tradeoff between showing more sateps and
 details/background vs creating a concise paper without too many digressions.  We
 typically offer more details in the referee-response document then we put into
 the paper, hoping the latter are sufficient to have future readers avoid the

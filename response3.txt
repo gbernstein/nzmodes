@@ -1,0 +1,33 @@
+> The paper addresses a problem from weak lensing analysis, where a prior over
+> many bias parameters is not available as a density distribution but as
+> samples. It proposes a density estimation technique that first performs a kind
+> of principle component analysis (PCA), with a likelihood-informed metric. It
+> then performs simple 1d marginal Gaussianization in the latent space of the
+> PCA. It shows that this approach better approximates the prior than the more
+> standard approach.
+> 
+> The paper is technically solid and the main idea is reasonable, I especially
+> appreciate that the PCA analysis is informed by the likelihood. The numerical
+> analysis is also solid and I appreciate that it is accompanied by an intuitive
+> explanation of the results. I would be happy to recommend the paper for
+> publication, if my comment is addressed. I only have one issue:
+> 
+> The paper is framed as a general method with a specific application in mind,
+> however it does not even list other problems where the proposed method would be
+> useful. The proposed method makes some strong assumptions (linearity, etc) and
+> the density estimation in the latent space is very simple (1d marginalization,
+> neglecting correlations). This is ok, because it is validated for the problem at
+> hand, but it is not clear how well the approach would generalize to other
+> problems. I would recommend that the statement that this is a general method is
+> retracted and the title and framing is changed. If the authors wish to keep the
+> current framing the method should be applied to other problems and compared with
+> other density estimation techniques.
+
+In response to the final suggestion, we have changed the title to
+
+"Dimensional reduction for sampled priors"
+
+which emphasizes the new (to cosmology, at least) and generally applicable aspect of this method, the likelihood-aware PCA, rather than the second step of building a density estimator over the reduced-dimension field.  As the referee notes, the worked example in the paper is a case where the 2nd step is quite simple, and this may be less true in the general case.
+
+While we do not have readily available another inference problem with a complex, sampled prior to use an example, we have added some text (in red) to the draft clarifying the minimal conditions under which the method should be applicable, and in the closing section have suggested some other issues in precision cosmology where we believe that future analyses could make use of the compression of sampled priors.
+
