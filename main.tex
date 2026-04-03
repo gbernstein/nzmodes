@@ -53,14 +53,15 @@
 
 \begin{document}
 
-\title{Dimensional reduction for sampled priors}
+\title{Dimensional reduction for sampled priors and application to
+photometric redshift distributions}
 
 
-\include{authors.tex}
+%\include{authors.tex}
 % ApJ wants just a single author listed in the latex file for some reason
-%\author[0000-0002-8613-8259, gname='Gary', sname='Bernstein']{G.~M.~Bernstein}
-%\affiliation{Department of Physics and Astronomy, University of Pennsylvania, Philadelphia, PA 19104, USA}
-%\email{garyb@physics.upenn.edu}
+\author[0000-0002-8613-8259, gname='Gary', sname='Bernstein']{G.~M.~Bernstein}
+\affiliation{Department of Physics and Astronomy, University of Pennsylvania, Philadelphia, PA 19104, USA}
+\email{garyb@physics.upenn.edu}
 \correspondingauthor{G.~M.~Bernstein}
 
 \begin{abstract}
@@ -72,11 +73,11 @@ p(\vecq) p(\vecn),$ where $\vecn$ are some nuisance parameters with
 cases, the nuisance parameters are high-dimensional, and their
 prior $p(\vecn)$ is itself defined only by a set of samples that have
 been drawn from some other MC.  
-\ed{The MC for the posterior will typically require evaluation of
+The MC for the posterior will typically require evaluation of
 $p(\vecn)$ at arbitrary values of $\vecn,$ \ie\ one needs to provide a
 density estimator over the full $\vecn$ space from the provided
 samples.  But the high dimensionality of $\vecn$ hinders both the
-density estimation and the efficiency of the MC for the posterior.}  We
+density estimation and the efficiency of the MC for the posterior.  We
 describe a solution to this problem: a linear compression of the
 $\vecn$ space into a much lower-dimensional space $\vecu$ which
 projects away directions in $\vecn$ space that cannot appreciably
@@ -313,11 +314,11 @@ likely to be very informative on $\vecn$---if they were, we might not be
 concerned with establishing a prior on $\vecn$ to begin with.
 Fortunately, we will not require the inverse of $\matF$ in our algorithm.
 
-\ed{Our assumptions that the likelihood is normal in $\hatc$ and that we can
+Our assumptions that the likelihood is normal in $\hatc$ and that we can
   linearize $\hatc$ in $\vecn$ [equations (\ref{eq:like1}) and
   (\ref{eq:linearmodel})] can be replaced by the slightly more general condition
   that the Hessian of $\log\likeli$ with respect to $\vecn$ is well approximated
-  as constant over the domain of interest of $(\vecq,\vecn)$.} 
+  as constant over the domain of interest of $(\vecq,\vecn)$.
 
 The optimization implied by \eqq{eq:linearized} is the same as in
 familiar Principal Components Analysis (PCA), aside from the presence
@@ -785,13 +786,13 @@ and the $n(z)$ estimates.
  The mode-projection technique
   is essentially a method of projecting away irrelevant
   fluctuations in $\vecn.$
-\ed{The algebra to derive the compression scheme that minimizes the mean shift
+The algebra to derive the compression scheme that minimizes the mean shift
   in computed likelihood $\langle  \chi^2\rangle$ makes the assumption that the
   Hessian $\partial^2 \log\likeli / \partial\vecn^2$ is constant in the
   parameter ranges of interest, but in fact the successful application of this
   compression  to inference requires only the weaker assumption that
   fluctuations in $\vecn$ that are normal to the M-dimensional compression plane
-  have   negligible impact on $\log\likeli.$}
+  have   negligible impact on $\log\likeli.$
 
 This technique was developed for the case when
   $\vecn$ represents the redshift distributions of galaxies in DES.  Some
@@ -822,7 +823,7 @@ While this new approach to marginalizing over $n(z)$  has minimal consequence fo
   and can be generally applicable to other analyses where critical nuisance parameters
   do not have evaluable priors.
 
-\ed{The compression technique is applicable to any inference with a
+The compression technique is applicable to any inference with a
   high-dimensional prior known only through a set of samples.  In the
   cosmological realm, one case of high-dimensional nuisance
   parameters might  be a binned representation of the absolute response vs
@@ -832,7 +833,7 @@ While this new approach to marginalizing over $n(z)$  has minimal consequence fo
   detailed power spectrum $P_\delta(k,z)$ of density fluctuations created by
   gravity plus baryonic forces, as constrained by ensembles or jackknife samples
   of numerical simulations.  This likelihood-aware PCA should be of use to
-  inferences in a broad range of fields.}
+  inferences in a broad range of fields.
   
   \begin{acknowledgments}
 G.M.B. acknowledges support from NSF grant AST-2205808 and DOE award DE-SC0007901.
@@ -899,13 +900,13 @@ arXiv:2510.23566
   doi:10.1093/mnras/stab1515
   
 % Y6 modelling paper
-\bibitem[Sanchez-Cid et al.(2025)]{y6model} Sanchez-Cid et al.\ 2025
-  (in preparation)
+\bibitem[Sanchez-Cid et al.(2026)]{y6model} Sanchez-Cid et al.\ 2026,
+  arXiv:2601.14859
 
 \bibitem[Tegmark et al.(1997)]{TTH} Tegmark, M., Taylor, A.~N., \& Heavens,
   A.~F.\ 1997, \apj, 480, 1, 22. doi:10.1086/303939 
   
-\bibitem[Weaverdyck et al.(2025)]{y6maglim} Weaverdyck, N. et al.\ 2025 (in preparation)
+\bibitem[Weaverdyck et al.(2026)]{y6maglim} Weaverdyck, N. et al.\ 2026, arXiv:2601.14484
 
 \bibitem[Yin et al.(2025)]{y6pz} Yin, B. et al.\ 2025, arXiv:2510.23566
   
